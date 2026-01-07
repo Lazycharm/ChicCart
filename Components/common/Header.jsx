@@ -53,9 +53,12 @@ export default function Header() {
   return (
     <>
       {/* Main Header - Fixed on scroll */}
-      <header className={`fixed top-0 left-0 right-0 z-[9999] bg-white transition-all duration-300 ${
-        isScrolled ? 'shadow-md' : 'shadow-sm'
-      }`}>
+      <header 
+        className={`fixed top-0 left-0 right-0 bg-white transition-all duration-300 ${
+          isScrolled ? 'shadow-md' : 'shadow-sm'
+        }`}
+        style={{ zIndex: 9999, position: 'fixed' }}
+      >
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Left: Logo */}
@@ -159,7 +162,8 @@ export default function Header() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-[10000]"
+                      className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2"
+                      style={{ zIndex: 10000 }}
                     >
                       {/* Quick Links */}
                       <div className="px-4 py-2">
@@ -284,7 +288,8 @@ export default function Header() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-[9997] flex items-start justify-center pt-20"
+            className="fixed inset-0 bg-black/50 flex items-start justify-center pt-20"
+            style={{ zIndex: 9997 }}
             onClick={() => setSearchOpen(false)}
           >
             <motion.div
@@ -320,7 +325,8 @@ export default function Header() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-[9998]"
+            className="fixed inset-0 bg-black/50"
+            style={{ zIndex: 9998 }}
             onClick={() => setMobileMenuOpen(false)}
           >
             <motion.div
