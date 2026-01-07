@@ -53,8 +53,8 @@ export default function Header() {
   return (
     <>
       {/* Main Header - Fixed on scroll */}
-      <header className={`fixed top-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-md transition-all duration-300 ${
-        isScrolled ? 'shadow-md' : ''
+      <header className={`fixed top-0 left-0 right-0 z-[100] bg-white transition-all duration-300 ${
+        isScrolled ? 'shadow-md' : 'shadow-sm'
       }`}>
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -62,13 +62,13 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => setMobileMenuOpen(true)}
-                className={`p-2 rounded-full transition-colors lg:hidden ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                className="p-2 rounded-full transition-colors lg:hidden hover:bg-gray-100"
               >
-                <Menu className={`w-6 h-6 ${isScrolled ? 'text-black' : 'text-white'}`} />
+                <Menu className="w-6 h-6 text-black" />
               </button>
               
               <Link to={createPageUrl('Home')} className="flex-shrink-0">
-                <h1 className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-widest transition-colors ${isScrolled ? 'text-black' : 'text-white'}`}>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-widest text-black">
                   LUXE
                 </h1>
               </Link>
@@ -78,7 +78,7 @@ export default function Header() {
             <nav className="hidden lg:flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
               <Link 
                 to={createPageUrl('Shop')}
-                className={`text-sm font-medium transition-colors whitespace-nowrap ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+                className="text-sm font-medium transition-colors whitespace-nowrap text-gray-700 hover:text-black"
               >
                 All
               </Link>
@@ -86,20 +86,20 @@ export default function Header() {
                 <Link 
                   key={cat.id}
                   to={createPageUrl('Shop') + `?category=${cat.slug}`}
-                  className={`text-sm font-medium transition-colors whitespace-nowrap ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+                  className="text-sm font-medium transition-colors whitespace-nowrap text-gray-700 hover:text-black"
                 >
                   {cat.name}
                 </Link>
               ))}
               <Link 
                 to={createPageUrl('Shop') + '?filter=new'}
-                className={`text-sm font-medium transition-colors whitespace-nowrap ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+                className="text-sm font-medium transition-colors whitespace-nowrap text-gray-700 hover:text-black"
               >
                 New
               </Link>
               <Link 
                 to={createPageUrl('Shop') + '?filter=sale'}
-                className={`text-sm font-medium transition-colors whitespace-nowrap ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+                className="text-sm font-medium transition-colors whitespace-nowrap text-gray-700 hover:text-black"
               >
                 Sale
               </Link>
@@ -109,18 +109,18 @@ export default function Header() {
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <button 
                 onClick={() => setSearchOpen(true)}
-                className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                className="p-2 rounded-full transition-colors hover:bg-gray-100"
                 aria-label="Search"
               >
-                <Search className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
+                <Search className="w-5 h-5 text-black" />
               </button>
 
               <Link 
                 to={createPageUrl('Wishlist')}
-                className={`p-2 rounded-full transition-colors relative ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                className="p-2 rounded-full transition-colors relative hover:bg-gray-100"
                 aria-label="Wishlist"
               >
-                <Heart className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
+                <Heart className="w-5 h-5 text-black" />
                 {wishlist.length > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-xs rounded-full flex items-center justify-center">
                     {wishlist.length}
@@ -130,10 +130,10 @@ export default function Header() {
 
               <button 
                 onClick={() => setIsOpen(true)}
-                className={`p-2 rounded-full transition-colors relative ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                className="p-2 rounded-full transition-colors relative hover:bg-gray-100"
                 aria-label="Cart"
               >
-                <ShoppingBag className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
+                <ShoppingBag className="w-5 h-5 text-black" />
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-xs rounded-full flex items-center justify-center">
                     {cartCount}
@@ -145,7 +145,7 @@ export default function Header() {
               <div className="hidden lg:block desktop-menu-container relative">
                 <button
                   onClick={() => setDesktopMenuOpen(!desktopMenuOpen)}
-                  className={`p-2 rounded-full transition-colors flex items-center gap-1 ${isScrolled ? 'hover:bg-gray-100 text-black' : 'hover:bg-white/20 text-white'}`}
+                  className="p-2 rounded-full transition-colors flex items-center gap-1 hover:bg-gray-100 text-black"
                   aria-label="Menu"
                 >
                   <Menu className="w-5 h-5" />
