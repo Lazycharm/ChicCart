@@ -159,7 +159,7 @@ export default function Header() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
+                      className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-[200]"
                     >
                       {/* Quick Links */}
                       <div className="px-4 py-2">
@@ -249,6 +249,25 @@ export default function Header() {
                           )}
                         </div>
                       </div>
+
+                      {/* Admin Section */}
+                      {user?.role === 'admin' && (
+                        <>
+                          <div className="border-t border-gray-200 my-2"></div>
+                          <div className="px-4 py-2">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Admin</h4>
+                            <div className="space-y-1">
+                              <Link
+                                to={createPageUrl('AdminDashboard')}
+                                className="block px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-md transition-colors font-medium"
+                                onClick={() => setDesktopMenuOpen(false)}
+                              >
+                                Admin Dashboard
+                              </Link>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -415,6 +434,20 @@ export default function Header() {
                     </Link>
                   )}
                 </div>
+
+                {/* Admin Section */}
+                {user?.role === 'admin' && (
+                  <div className="border-t pt-4 mt-4">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Admin</h3>
+                    <Link 
+                      to={createPageUrl('AdminDashboard')}
+                      className="block py-3 px-4 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Admin Dashboard
+                    </Link>
+                  </div>
+                )}
               </nav>
             </motion.div>
           </motion.div>
