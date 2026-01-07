@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Grid3X3, TrendingUp, ShoppingBag, User } from 'lucide-react';
+import { Home, Grid3X3, TrendingUp, ShoppingBag, User, Menu, X } from 'lucide-react';
 import { useCart } from '@/components/ui/CartContext';
 import { useAuth } from '@/components/ui/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const { isAuthenticated } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const isActive = (path) => {
     const currentPath = location.pathname;
@@ -76,28 +78,58 @@ export default function BottomNav() {
       badge: cartCount
     },
     { 
-      icon: User, 
-      label: 'Me', 
-      path: isAuthenticated ? '/orders' : '/login',
-      onClick: handleMeClick,
-      isActive: isMeActive
+      icon: Menu, 
+      label: 'Menu', 
+      path: '#',
+      onClick: (e) => {
+        e.preventDefault();
+        setMenuOpen(true);
+      }
     }
   ];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-inset-bottom">
-      <div className="flex items-center justify-around h-16 px-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = item.isActive !== undefined ? item.isActive : isActive(item.path);
-          
-          if (item.onClick) {
+    <>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-inset-bottom">
+        <div className="flex items-center justify-around h-16 px-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = item.isActive !== undefined ? item.isActive : isActive(item.path);
+            
+            if (item.onClick) {
+              return (
+                <button
+                  key={item.label}
+                  onClick={item.onClick}
+                  type="button"
+                  className="flex flex-col items-center justify-center flex-1 h-full relative min-w-0 px-1 py-2 transition-colors hover:bg-gray-50 active:bg-gray-100 rounded-lg cursor-pointer"
+                >
+                  <div className="relative flex-shrink-0">
+                    <Icon 
+                      className={`w-5 h-5 transition-colors ${
+                        active ? 'text-rose-500' : 'text-gray-600'
+                      }`} 
+                    />
+                    {item.badge && item.badge > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-rose-500 text-white text-[10px] font-semibold rounded-full flex items-center justify-center px-1">
+                        {item.badge > 99 ? '99+' : item.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-[10px] mt-0.5 transition-colors truncate w-full text-center ${
+                    active ? 'text-rose-500 font-semibold' : 'text-gray-600 font-medium'
+                  }`}>
+                    {item.label}
+                  </span>
+                </button>
+              );
+            }
+            
             return (
-              <button
+              <Link
                 key={item.label}
-                onClick={item.onClick}
-                type="button"
-                className="flex flex-col items-center justify-center flex-1 h-full relative min-w-0 px-1 py-2 transition-colors hover:bg-gray-50 active:bg-gray-100 rounded-lg cursor-pointer"
+                to={item.path}
+                className="flex flex-col items-center justify-center flex-1 h-full relative min-w-0 px-1 py-2 transition-colors hover:bg-gray-50 active:bg-gray-100 rounded-lg"
               >
                 <div className="relative flex-shrink-0">
                   <Icon 
@@ -116,37 +148,126 @@ export default function BottomNav() {
                 }`}>
                   {item.label}
                 </span>
-              </button>
+              </Link>
             );
-          }
-          
-          return (
-            <Link
-              key={item.label}
-              to={item.path}
-              className="flex flex-col items-center justify-center flex-1 h-full relative min-w-0 px-1 py-2 transition-colors hover:bg-gray-50 active:bg-gray-100 rounded-lg"
+          })}
+        </div>
+      </nav>
+
+      {/* Mobile Menu Drawer */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-[60] lg:hidden"
+            onClick={() => setMenuOpen(false)}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] overflow-y-auto"
+              onClick={e => e.stopPropagation()}
             >
-              <div className="relative flex-shrink-0">
-                <Icon 
-                  className={`w-5 h-5 transition-colors ${
-                    active ? 'text-rose-500' : 'text-gray-600'
-                  }`} 
-                />
-                {item.badge && item.badge > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-rose-500 text-white text-[10px] font-semibold rounded-full flex items-center justify-center px-1">
-                    {item.badge > 99 ? '99+' : item.badge}
-                  </span>
-                )}
+              <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
+                <h2 className="text-xl font-bold">Menu</h2>
+                <button onClick={() => setMenuOpen(false)}>
+                  <X className="w-6 h-6" />
+                </button>
               </div>
-              <span className={`text-[10px] mt-0.5 transition-colors truncate w-full text-center ${
-                active ? 'text-rose-500 font-semibold' : 'text-gray-600 font-medium'
-              }`}>
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+              <nav className="p-4 space-y-1">
+                {/* Quick Links */}
+                <div className="mb-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Quick Links</h3>
+                  <Link 
+                    to={createPageUrl('About')}
+                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    About Us
+                  </Link>
+                  <Link 
+                    to={createPageUrl('Contact')}
+                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Contact
+                  </Link>
+                </div>
+
+                {/* Customer Service */}
+                <div className="border-t pt-4 mt-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Customer Service</h3>
+                  <Link 
+                    to={createPageUrl('FAQ')}
+                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    FAQ
+                  </Link>
+                  <Link 
+                    to={createPageUrl('Returns')}
+                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Returns & Refunds
+                  </Link>
+                  <Link 
+                    to={createPageUrl('Privacy')}
+                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Privacy Policy
+                  </Link>
+                  <Link 
+                    to={createPageUrl('Terms')}
+                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Terms & Conditions
+                  </Link>
+                  {isAuthenticated && (
+                    <Link 
+                      to={createPageUrl('Orders')}
+                      className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Track Order
+                    </Link>
+                  )}
+                </div>
+
+                {/* Account */}
+                {isAuthenticated ? (
+                  <div className="border-t pt-4 mt-4">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Account</h3>
+                    <Link 
+                      to={createPageUrl('Orders')}
+                      className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      My Orders
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="border-t pt-4 mt-4">
+                    <Link 
+                      to={createPageUrl('Login')}
+                      className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Sign In / Sign Up
+                    </Link>
+                  </div>
+                )}
+              </nav>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

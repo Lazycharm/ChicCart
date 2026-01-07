@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, ShoppingBag, Heart, User, Menu, X, Mail
+  Search, ShoppingBag, Heart, User, Menu, X, Mail, ChevronDown
 } from 'lucide-react';
 import { useCart } from '@/components/ui/CartContext';
 import { useWishlist } from '@/components/ui/WishlistContext';
@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount, setIsOpen } = useCart();
@@ -31,6 +32,17 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close desktop menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (desktopMenuOpen && !event.target.closest('.desktop-menu-container')) {
+        setDesktopMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [desktopMenuOpen]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -46,61 +58,59 @@ export default function Header() {
       }`}>
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Left Side */}
-            <div className="flex items-center gap-4 flex-1 lg:flex-none">
+            {/* Left: Logo */}
+            <div className="flex items-center gap-4">
               <button 
                 onClick={() => setMobileMenuOpen(true)}
                 className={`p-2 rounded-full transition-colors lg:hidden ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
               >
                 <Menu className={`w-6 h-6 ${isScrolled ? 'text-black' : 'text-white'}`} />
               </button>
-              <button 
-                className={`p-2 rounded-full transition-colors hidden sm:block ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
-              >
-                <Mail className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
-              </button>
               
-              {/* Logo - Centered on mobile, left on desktop */}
-              <Link to={createPageUrl('Home')} className="absolute left-1/2 -translate-x-1/2 z-10 lg:relative lg:left-0 lg:translate-x-0">
+              <Link to={createPageUrl('Home')} className="flex-shrink-0">
                 <h1 className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-widest transition-colors ${isScrolled ? 'text-black' : 'text-white'}`}>
                   LUXE
                 </h1>
               </Link>
             </div>
 
-            {/* Desktop Navigation - Center */}
-            <nav className="hidden lg:flex items-center gap-8 flex-1 justify-center">
-              <Link 
-                to={createPageUrl('Home')}
-                className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
-              >
-                Home
-              </Link>
+            {/* Center: Category Navigation (Desktop) */}
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
               <Link 
                 to={createPageUrl('Shop')}
-                className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+                className={`text-sm font-medium transition-colors whitespace-nowrap ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
               >
-                Shop
+                All
+              </Link>
+              {categories.map(cat => (
+                <Link 
+                  key={cat.id}
+                  to={createPageUrl('Shop') + `?category=${cat.slug}`}
+                  className={`text-sm font-medium transition-colors whitespace-nowrap ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+                >
+                  {cat.name}
+                </Link>
+              ))}
+              <Link 
+                to={createPageUrl('Shop') + '?filter=new'}
+                className={`text-sm font-medium transition-colors whitespace-nowrap ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+              >
+                New
               </Link>
               <Link 
-                to={createPageUrl('About')}
-                className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+                to={createPageUrl('Shop') + '?filter=sale'}
+                className={`text-sm font-medium transition-colors whitespace-nowrap ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
               >
-                About
-              </Link>
-              <Link 
-                to={createPageUrl('Contact')}
-                className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
-              >
-                Contact
+                Sale
               </Link>
             </nav>
 
-            {/* Right Icons */}
-            <div className="flex items-center gap-1 sm:gap-2">
+            {/* Right: Search, User, Favorites, Cart */}
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <button 
                 onClick={() => setSearchOpen(true)}
                 className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                aria-label="Search"
               >
                 <Search className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
               </button>
@@ -109,6 +119,7 @@ export default function Header() {
                 <button 
                   onClick={() => window.location.href = createPageUrl('Orders')}
                   className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                  aria-label="Account"
                 >
                   <User className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
                 </button>
@@ -116,6 +127,7 @@ export default function Header() {
                 <Link
                   to={createPageUrl('Login')}
                   className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                  aria-label="Login"
                 >
                   <User className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
                 </Link>
@@ -124,6 +136,7 @@ export default function Header() {
               <Link 
                 to={createPageUrl('Wishlist')}
                 className={`p-2 rounded-full transition-colors relative ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                aria-label="Wishlist"
               >
                 <Heart className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
                 {wishlist.length > 0 && (
@@ -136,6 +149,7 @@ export default function Header() {
               <button 
                 onClick={() => setIsOpen(true)}
                 className={`p-2 rounded-full transition-colors relative ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                aria-label="Cart"
               >
                 <ShoppingBag className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
                 {cartCount > 0 && (
@@ -144,47 +158,123 @@ export default function Header() {
                   </span>
                 )}
               </button>
+
+              {/* Desktop Menu Dropdown */}
+              <div className="hidden lg:block desktop-menu-container relative">
+                <button
+                  onClick={() => setDesktopMenuOpen(!desktopMenuOpen)}
+                  className={`p-2 rounded-full transition-colors flex items-center gap-1 ${isScrolled ? 'hover:bg-gray-100 text-black' : 'hover:bg-white/20 text-white'}`}
+                  aria-label="Menu"
+                >
+                  <Menu className="w-5 h-5" />
+                  <ChevronDown className={`w-4 h-4 transition-transform ${desktopMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {desktopMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50"
+                    >
+                      {/* Quick Links */}
+                      <div className="px-4 py-2">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Quick Links</h4>
+                        <div className="space-y-1">
+                          <Link
+                            to={createPageUrl('Shop')}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            Shop All
+                          </Link>
+                          <Link
+                            to={createPageUrl('Shop') + '?filter=new'}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            New Arrivals
+                          </Link>
+                          <Link
+                            to={createPageUrl('Shop') + '?filter=sale'}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            Sale
+                          </Link>
+                          <Link
+                            to={createPageUrl('About')}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            About Us
+                          </Link>
+                          <Link
+                            to={createPageUrl('Contact')}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            Contact
+                          </Link>
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="border-t border-gray-200 my-2"></div>
+
+                      {/* Customer Service */}
+                      <div className="px-4 py-2">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Customer Service</h4>
+                        <div className="space-y-1">
+                          <Link
+                            to={createPageUrl('FAQ')}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            FAQ
+                          </Link>
+                          <Link
+                            to={createPageUrl('Returns')}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            Returns & Refunds
+                          </Link>
+                          <Link
+                            to={createPageUrl('Privacy')}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            Privacy Policy
+                          </Link>
+                          <Link
+                            to={createPageUrl('Terms')}
+                            className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                            onClick={() => setDesktopMenuOpen(false)}
+                          >
+                            Terms & Conditions
+                          </Link>
+                          {isAuthenticated && (
+                            <Link
+                              to={createPageUrl('Orders')}
+                              className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                              onClick={() => setDesktopMenuOpen(false)}
+                            >
+                              Track Order
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>
       </header>
-
-      {/* Fixed Category Navigation */}
-      <nav className={`fixed top-16 lg:top-20 left-0 right-0 z-40 bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-300 ${
-        isScrolled ? 'shadow-md' : ''
-      }`}>
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex items-center gap-8 px-4 h-12 min-w-max">
-            <Link 
-              to={createPageUrl('Shop')}
-              className="text-white text-sm font-medium hover:text-white/80 transition-colors whitespace-nowrap"
-            >
-              All
-            </Link>
-            {categories.map(cat => (
-              <Link 
-                key={cat.id}
-                to={createPageUrl('Shop') + `?category=${cat.slug}`}
-                className="text-white text-sm font-medium hover:text-white/80 transition-colors whitespace-nowrap"
-              >
-                {cat.name}
-              </Link>
-            ))}
-            <Link 
-              to={createPageUrl('Shop') + '?filter=new'}
-              className="text-white text-sm font-medium hover:text-white/80 transition-colors whitespace-nowrap"
-            >
-              New
-            </Link>
-            <Link 
-              to={createPageUrl('Shop') + '?filter=sale'}
-              className="text-white text-sm font-medium hover:text-white/80 transition-colors whitespace-nowrap"
-            >
-              Sale
-            </Link>
-          </div>
-        </div>
-      </nav>
 
       {/* Search Modal */}
       <AnimatePresence>
@@ -247,44 +337,51 @@ export default function Header() {
                 </button>
               </div>
               <nav className="p-4 space-y-1">
-                <Link 
-                  to={createPageUrl('Shop')}
-                  className="block py-3 px-4 text-base font-medium hover:bg-gray-50 rounded-lg transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  All
-                </Link>
-                {categories.map(cat => (
+                {/* Categories */}
+                <div className="mb-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Categories</h3>
                   <Link 
-                    key={cat.id}
-                    to={createPageUrl('Shop') + `?category=${cat.slug}`}
+                    to={createPageUrl('Shop')}
                     className="block py-3 px-4 text-base font-medium hover:bg-gray-50 rounded-lg transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {cat.name}
+                    All
                   </Link>
-                ))}
-                <Link 
-                  to={createPageUrl('Shop') + '?filter=new'}
-                  className="block py-3 px-4 text-base font-medium hover:bg-gray-50 rounded-lg transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  New Arrivals
-                </Link>
-                <Link 
-                  to={createPageUrl('Shop') + '?filter=sale'}
-                  className="block py-3 px-4 text-base font-medium text-rose-500 hover:bg-gray-50 rounded-lg transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Sale
-                </Link>
+                  {categories.map(cat => (
+                    <Link 
+                      key={cat.id}
+                      to={createPageUrl('Shop') + `?category=${cat.slug}`}
+                      className="block py-3 px-4 text-base font-medium hover:bg-gray-50 rounded-lg transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                  <Link 
+                    to={createPageUrl('Shop') + '?filter=new'}
+                    className="block py-3 px-4 text-base font-medium hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    New Arrivals
+                  </Link>
+                  <Link 
+                    to={createPageUrl('Shop') + '?filter=sale'}
+                    className="block py-3 px-4 text-base font-medium text-rose-500 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sale
+                  </Link>
+                </div>
+
+                {/* Quick Links */}
                 <div className="border-t pt-4 mt-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Quick Links</h3>
                   <Link 
                     to={createPageUrl('About')}
                     className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    About
+                    About Us
                   </Link>
                   <Link 
                     to={createPageUrl('Contact')}
@@ -293,13 +390,46 @@ export default function Header() {
                   >
                     Contact
                   </Link>
-                  {user && (
+                </div>
+
+                {/* Customer Service */}
+                <div className="border-t pt-4 mt-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Customer Service</h3>
+                  <Link 
+                    to={createPageUrl('FAQ')}
+                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    FAQ
+                  </Link>
+                  <Link 
+                    to={createPageUrl('Returns')}
+                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Returns & Refunds
+                  </Link>
+                  <Link 
+                    to={createPageUrl('Privacy')}
+                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Privacy Policy
+                  </Link>
+                  <Link 
+                    to={createPageUrl('Terms')}
+                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Terms & Conditions
+                  </Link>
+                  {isAuthenticated && (
                     <Link 
                       to={createPageUrl('Orders')}
                       className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      My Orders
+                      Track Order
                     </Link>
                   )}
                 </div>

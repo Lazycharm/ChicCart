@@ -5,7 +5,6 @@ import { getProducts } from '@/services/products';
 import { getCategories } from '@/services/categories';
 import { getBanners } from '@/services/banners';
 import HeroSection from '@/components/home/HeroSection';
-import CategoryNav from '@/components/home/CategoryNav';
 import CategoryGrid from '@/components/home/CategoryGrid';
 import ProductCarousel from '@/components/home/ProductCarousel';
 import FlashDeals from '@/components/home/FlashDeals';
@@ -44,9 +43,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Category Navigation - Fixed below header */}
-      <CategoryNav />
-      
       {/* Hero Banner */}
       <HeroSection banners={banners} />
       
