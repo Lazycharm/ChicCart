@@ -56,11 +56,7 @@ export default function ProductCard({ product, index = 0 }) {
         }}
       >
         {/* Image Container */}
-<<<<<<< HEAD
         <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-100 shadow-sm group-hover:shadow-md transition-shadow duration-300">
-=======
-        <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-gray-100">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
           {/* Main Image */}
           <motion.img
             src={product.images?.[imageIndex] || product.images?.[0] || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400'}
@@ -68,7 +64,6 @@ export default function ProductCard({ product, index = 0 }) {
             className="w-full h-full object-cover"
             initial={false}
             animate={{ scale: isHovered ? 1.05 : 1 }}
-<<<<<<< HEAD
             transition={{ duration: 0.4, ease: "easeOut" }}
           />
 
@@ -76,33 +71,16 @@ export default function ProductCard({ product, index = 0 }) {
           <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
             {product.is_new && (
               <span className="px-2 py-1 bg-black text-white text-[10px] font-bold rounded shadow-md">
-=======
-            transition={{ duration: 0.4 }}
-          />
-
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.is_new && (
-              <span className="px-2 py-1 bg-black text-white text-xs font-medium rounded-full">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                 NEW
               </span>
             )}
             {discount > 0 && (
-<<<<<<< HEAD
               <span className="px-2 py-1 bg-rose-500 text-white text-[10px] font-bold rounded shadow-md">
-=======
-              <span className="px-2 py-1 bg-rose-500 text-white text-xs font-medium rounded-full">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                 -{discount}%
               </span>
             )}
             {product.is_flash_deal && (
-<<<<<<< HEAD
               <span className="px-2 py-1 bg-amber-500 text-white text-[10px] font-bold rounded shadow-md flex items-center gap-0.5">
-=======
-              <span className="px-2 py-1 bg-amber-500 text-white text-xs font-medium rounded-full animate-pulse">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                 🔥 FLASH
               </span>
             )}
@@ -111,7 +89,6 @@ export default function ProductCard({ product, index = 0 }) {
           {/* Wishlist Button */}
           <motion.button
             onClick={handleWishlist}
-<<<<<<< HEAD
             className={`absolute top-2 right-2 p-2 rounded-full shadow-md transition-all duration-200 ${
               isInWishlist(product.id) 
                 ? 'bg-rose-500 text-white' 
@@ -120,23 +97,12 @@ export default function ProductCard({ product, index = 0 }) {
             whileTap={{ scale: 0.9 }}
           >
             <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
-=======
-            className={`absolute top-3 right-3 p-2 rounded-full shadow-lg transition-colors ${
-              isInWishlist(product.id) 
-                ? 'bg-rose-500 text-white' 
-                : 'bg-white text-gray-600 hover:bg-rose-50 hover:text-rose-500'
-            }`}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
           </motion.button>
 
           {/* Quick Actions */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
-<<<<<<< HEAD
             transition={{ duration: 0.2 }}
             className="absolute bottom-2 left-2 right-2 flex gap-1.5 z-10"
           >
@@ -145,30 +111,14 @@ export default function ProductCard({ product, index = 0 }) {
               className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-black text-white text-xs font-semibold rounded-lg hover:bg-gray-800 active:scale-95 transition-all duration-200 shadow-md"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
-=======
-            className="absolute bottom-3 left-3 right-3 flex gap-2"
-          >
-            <button
-              onClick={handleQuickAdd}
-              className="flex-1 flex items-center justify-center gap-2 py-3 bg-black text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-colors"
-            >
-              <ShoppingBag className="w-4 h-4" />
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
               Quick Add
             </button>
             <Link
               to={createPageUrl('ProductDetail') + `?id=${product.id}`}
-<<<<<<< HEAD
               className="p-2 bg-white/95 backdrop-blur-sm text-gray-800 rounded-lg hover:bg-white hover:scale-105 active:scale-95 transition-all duration-200 shadow-md"
               onClick={(e) => e.stopPropagation()}
             >
               <Eye className="w-4 h-4" />
-=======
-              className="p-3 bg-white text-gray-800 rounded-xl hover:bg-gray-100 transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Eye className="w-5 h-5" />
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
             </Link>
           </motion.div>
 
@@ -192,11 +142,7 @@ export default function ProductCard({ product, index = 0 }) {
         </div>
 
         {/* Product Info */}
-<<<<<<< HEAD
         <div className="mt-3 space-y-1.5">
-=======
-        <div className="mt-4 space-y-1">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
           {/* Rating */}
           {product.rating && (
             <div className="flex items-center gap-1">
@@ -212,39 +158,22 @@ export default function ProductCard({ product, index = 0 }) {
                   />
                 ))}
               </div>
-<<<<<<< HEAD
               <span className="text-[10px] text-gray-500">({product.reviews_count || 0})</span>
-=======
-              <span className="text-xs text-gray-500">({product.reviews_count || 0})</span>
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
             </div>
           )}
 
           {/* Name */}
-<<<<<<< HEAD
           <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-rose-500 transition-colors text-sm leading-tight">
-=======
-          <h3 className="font-medium text-gray-900 line-clamp-2 group-hover:text-rose-500 transition-colors">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
             {product.name}
           </h3>
 
           {/* Price */}
-<<<<<<< HEAD
           <div className="flex items-baseline gap-1.5">
             <span className="font-bold text-base text-gray-900">
               ${(product.sale_price || product.price).toFixed(2)}
             </span>
             {product.sale_price && (
               <span className="text-xs text-gray-400 line-through">
-=======
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-lg">
-              ${(product.sale_price || product.price).toFixed(2)}
-            </span>
-            {product.sale_price && (
-              <span className="text-sm text-gray-400 line-through">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                 ${product.price.toFixed(2)}
               </span>
             )}
@@ -252,29 +181,17 @@ export default function ProductCard({ product, index = 0 }) {
 
           {/* Colors */}
           {product.colors?.length > 0 && (
-<<<<<<< HEAD
             <div className="flex items-center gap-1 pt-0.5">
               {product.colors.slice(0, 5).map((color, i) => (
                 <div
                   key={i}
                   className="w-4 h-4 rounded-full border border-white shadow-sm ring-0.5 ring-gray-200"
-=======
-            <div className="flex gap-1 pt-1">
-              {product.colors.slice(0, 5).map((color, i) => (
-                <div
-                  key={i}
-                  className="w-4 h-4 rounded-full border border-gray-200"
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                   style={{ backgroundColor: color.hex }}
                   title={color.name}
                 />
               ))}
               {product.colors.length > 5 && (
-<<<<<<< HEAD
                 <span className="text-[10px] text-gray-500 ml-0.5">+{product.colors.length - 5}</span>
-=======
-                <span className="text-xs text-gray-500">+{product.colors.length - 5}</span>
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
               )}
             </div>
           )}

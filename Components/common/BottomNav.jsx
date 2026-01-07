@@ -1,5 +1,4 @@
 import React from 'react';
-<<<<<<< HEAD
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Home, Grid3X3, TrendingUp, ShoppingBag, User } from 'lucide-react';
@@ -154,7 +153,6 @@ export default function BottomNav() {
             <Link
               key={item.label}
               to={item.path}
-<<<<<<< HEAD
               className="flex flex-col items-center justify-center flex-1 h-full relative min-w-0 px-1 py-2 transition-colors hover:bg-gray-50 active:bg-gray-100 rounded-lg"
             >
               <div className="relative flex-shrink-0">
@@ -171,24 +169,6 @@ export default function BottomNav() {
               </div>
               <span className={`text-[10px] mt-0.5 transition-colors truncate w-full text-center ${
                 active ? 'text-rose-500 font-semibold' : 'text-gray-600 font-medium'
-=======
-              className="flex flex-col items-center justify-center flex-1 h-full relative"
-            >
-              <div className="relative">
-                <Icon 
-                  className={`w-6 h-6 transition-colors ${
-                    active ? 'text-rose-500' : 'text-gray-600'
-                  }`} 
-                />
-                {item.badge > 0 && (
-                  <span className="absolute -top-2 -right-2 w-5 h-5 bg-rose-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {item.badge}
-                  </span>
-                )}
-              </div>
-              <span className={`text-xs mt-1 transition-colors ${
-                active ? 'text-rose-500 font-medium' : 'text-gray-600'
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
               }`}>
                 {item.label}
               </span>

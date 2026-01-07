@@ -51,15 +51,9 @@ export default function CartDrawer() {
                   <ShoppingBag className="w-16 h-16 text-gray-300 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Your cart is empty</h3>
                   <p className="text-gray-500 mb-4">Start shopping to add items to your cart</p>
-<<<<<<< HEAD
                   <Link to={createPageUrl('Shop')}>
                     <Button onClick={() => setIsOpen(false)}>Continue Shopping</Button>
                   </Link>
-=======
-                  <Button onClick={() => setIsOpen(false)} asChild>
-                    <Link to={createPageUrl('Shop')}>Continue Shopping</Link>
-                  </Button>
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -71,16 +65,11 @@ export default function CartDrawer() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ delay: index * 0.05 }}
-<<<<<<< HEAD
                         className="flex gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200"
-=======
-                        className="flex gap-4 p-3 bg-gray-50 rounded-xl"
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                       >
                         <img
                           src={item.product_image}
                           alt={item.product_name}
-<<<<<<< HEAD
                           className="w-20 h-24 object-cover rounded-lg shadow-sm"
                         />
                         <div className="flex-1">
@@ -91,18 +80,6 @@ export default function CartDrawer() {
                             {item.color && `Color: ${item.color}`}
                           </p>
                           <p className="font-bold text-base mt-2 text-gray-900">${item.price.toFixed(2)}</p>
-=======
-                          className="w-20 h-24 object-cover rounded-lg"
-                        />
-                        <div className="flex-1">
-                          <h4 className="font-medium text-sm line-clamp-2">{item.product_name}</h4>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {item.size && `Size: ${item.size}`}
-                            {item.size && item.color && ' | '}
-                            {item.color && `Color: ${item.color}`}
-                          </p>
-                          <p className="font-semibold mt-1">${item.price.toFixed(2)}</p>
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                           
                           <div className="flex items-center justify-between mt-2">
                             <div className="flex items-center gap-2 bg-white rounded-full border">
@@ -146,7 +123,6 @@ export default function CartDrawer() {
                   Shipping & taxes calculated at checkout
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-<<<<<<< HEAD
                   <Link to={createPageUrl('Cart')}>
                     <Button 
                       variant="outline" 
@@ -163,22 +139,6 @@ export default function CartDrawer() {
                       Checkout
                     </Button>
                   </Link>
-=======
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setIsOpen(false)}
-                    asChild
-                  >
-                    <Link to={createPageUrl('Cart')}>View Cart</Link>
-                  </Button>
-                  <Button 
-                    className="bg-black hover:bg-gray-800"
-                    onClick={() => setIsOpen(false)}
-                    asChild
-                  >
-                    <Link to={createPageUrl('Checkout')}>Checkout</Link>
-                  </Button>
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                 </div>
               </div>
             )}

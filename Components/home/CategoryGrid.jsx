@@ -11,7 +11,6 @@ const defaultCategories = [
   { name: 'Shoes', slug: 'shoes', image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=600' },
 ];
 
-<<<<<<< HEAD
 // Map database categories to display format
 const mapCategory = (cat) => ({
   name: cat.name,
@@ -26,19 +25,11 @@ export default function CategoryGrid({ categories = [] }) {
 
   return (
     <section className="py-12 lg:py-16 px-4">
-=======
-export default function CategoryGrid({ categories = [] }) {
-  const displayCategories = categories.length > 0 ? categories : defaultCategories;
-
-  return (
-    <section className="py-16 lg:py-24 px-4">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-<<<<<<< HEAD
           className="text-center mb-8"
         >
           <span className="text-rose-500 font-semibold text-xs tracking-wider uppercase">BROWSE BY</span>
@@ -46,15 +37,6 @@ export default function CategoryGrid({ categories = [] }) {
         </motion.div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-=======
-          className="text-center mb-12"
-        >
-          <span className="text-rose-500 font-medium text-sm tracking-wider">BROWSE BY</span>
-          <h2 className="text-3xl lg:text-4xl font-bold mt-2">Shop by Category</h2>
-        </motion.div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
           {displayCategories.slice(0, 4).map((category, index) => (
             <motion.div
               key={category.slug}
@@ -65,16 +47,11 @@ export default function CategoryGrid({ categories = [] }) {
             >
               <Link
                 to={createPageUrl('Shop') + `?category=${category.slug}`}
-<<<<<<< HEAD
                 className="group relative block aspect-[4/5] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
-=======
-                className="group relative block aspect-[3/4] rounded-2xl overflow-hidden"
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
               >
                 <img
                   src={category.image}
                   alt={category.name}
-<<<<<<< HEAD
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -83,16 +60,6 @@ export default function CategoryGrid({ categories = [] }) {
                   <span className="inline-flex items-center gap-1.5 text-white text-xs font-medium group-hover:text-white transition-colors">
                     Shop Now 
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-=======
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-white text-xl lg:text-2xl font-bold mb-2">{category.name}</h3>
-                  <span className="inline-flex items-center gap-2 text-white/80 text-sm group-hover:text-white transition-colors">
-                    Shop Now 
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
->>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                   </span>
                 </div>
               </Link>
