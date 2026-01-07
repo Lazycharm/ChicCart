@@ -44,12 +44,18 @@ export default function TestimonialsSection() {
   const prev = () => setCurrentIndex(prev => (prev - 1 + testimonials.length) % testimonials.length);
 
   return (
+<<<<<<< HEAD
     <section className="py-12 lg:py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
+=======
+    <section className="py-16 lg:py-24 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4">
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+<<<<<<< HEAD
           className="text-center mb-8"
         >
           <span className="text-rose-500 font-semibold text-xs tracking-wider uppercase">TESTIMONIALS</span>
@@ -58,6 +64,16 @@ export default function TestimonialsSection() {
 
         {/* Desktop Grid */}
         <div className="hidden lg:grid grid-cols-4 gap-4">
+=======
+          className="text-center mb-12"
+        >
+          <span className="text-rose-500 font-medium text-sm tracking-wider">TESTIMONIALS</span>
+          <h2 className="text-3xl lg:text-4xl font-bold mt-2">What Our Customers Say</h2>
+        </motion.div>
+
+        {/* Desktop Grid */}
+        <div className="hidden lg:grid grid-cols-4 gap-6">
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id}

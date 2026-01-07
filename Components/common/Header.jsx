@@ -7,8 +7,14 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/components/ui/CartContext';
 import { useWishlist } from '@/components/ui/WishlistContext';
+<<<<<<< HEAD
 import { useAuth } from '@/components/ui/AuthContext';
 import { getCategories } from '@/services/categories';
+=======
+import { getCategories } from '@/services/categories';
+import { getCurrentUser, isAuthenticated } from '@/services/users';
+import { redirectToLogin } from '@/services/users';
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
 import { useQuery } from '@tanstack/react-query';
 
 export default function Header() {
@@ -18,7 +24,11 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount, setIsOpen } = useCart();
   const { wishlist } = useWishlist();
+<<<<<<< HEAD
   const { user, isAuthenticated } = useAuth();
+=======
+  const [user, setUser] = useState(null);
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
@@ -26,6 +36,20 @@ export default function Header() {
   });
 
   useEffect(() => {
+<<<<<<< HEAD
+=======
+    const checkUser = async () => {
+      const authStatus = await isAuthenticated();
+      if (authStatus) {
+        const userData = await getCurrentUser();
+        setUser(userData);
+      }
+    };
+    checkUser();
+  }, []);
+
+  useEffect(() => {
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -41,11 +65,19 @@ export default function Header() {
   return (
     <>
       {/* Main Header */}
+<<<<<<< HEAD
       <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
         isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-transparent'
       }`}>
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
+=======
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
+      }`}>
+        <div className="px-4">
+          <div className="flex items-center justify-between h-16">
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
             {/* Left Icons */}
             <div className="flex items-center gap-4">
               <button 
@@ -62,8 +94,13 @@ export default function Header() {
             </div>
 
             {/* Logo */}
+<<<<<<< HEAD
             <Link to={createPageUrl('Home')} className="absolute left-1/2 -translate-x-1/2 z-10">
               <h1 className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-widest transition-colors ${isScrolled ? 'text-black' : 'text-white'}`}>
+=======
+            <Link to={createPageUrl('Home')} className="absolute left-1/2 -translate-x-1/2">
+              <h1 className={`text-2xl lg:text-3xl font-bold tracking-widest ${isScrolled ? 'text-black' : 'text-white'}`}>
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                 LUXE
               </h1>
             </Link>
@@ -77,7 +114,11 @@ export default function Header() {
                 <Search className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
               </button>
 
+<<<<<<< HEAD
               {isAuthenticated ? (
+=======
+              {user ? (
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
                 <button 
                   onClick={() => window.location.href = createPageUrl('Orders')}
                   className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
@@ -85,12 +126,21 @@ export default function Header() {
                   <User className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
                 </button>
               ) : (
+<<<<<<< HEAD
                 <Link
                   to={createPageUrl('Login')}
                   className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
                 >
                   <User className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
                 </Link>
+=======
+                <button 
+                  onClick={() => redirectToLogin()}
+                  className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                >
+                  <User className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
+                </button>
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
               )}
 
               <Link 
@@ -121,6 +171,46 @@ export default function Header() {
         </div>
       </header>
 
+<<<<<<< HEAD
+=======
+      {/* Fixed Category Navigation */}
+      <nav className={`fixed top-16 left-0 right-0 z-40 bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-300 ${
+        isScrolled ? 'shadow-md' : ''
+      }`}>
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-8 px-4 h-12 min-w-max">
+            <Link 
+              to={createPageUrl('Shop')}
+              className="text-white text-sm font-medium hover:text-white/80 transition-colors whitespace-nowrap"
+            >
+              All
+            </Link>
+            {categories.map(cat => (
+              <Link 
+                key={cat.id}
+                to={createPageUrl('Shop') + `?category=${cat.slug}`}
+                className="text-white text-sm font-medium hover:text-white/80 transition-colors whitespace-nowrap"
+              >
+                {cat.name}
+              </Link>
+            ))}
+            <Link 
+              to={createPageUrl('Shop') + '?filter=new'}
+              className="text-white text-sm font-medium hover:text-white/80 transition-colors whitespace-nowrap"
+            >
+              New
+            </Link>
+            <Link 
+              to={createPageUrl('Shop') + '?filter=sale'}
+              className="text-white text-sm font-medium hover:text-white/80 transition-colors whitespace-nowrap"
+            >
+              Sale
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+>>>>>>> 9901c3343fbf53127d38adce4f907328a8221168
       {/* Search Modal */}
       <AnimatePresence>
         {searchOpen && (
