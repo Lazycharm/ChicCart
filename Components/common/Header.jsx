@@ -46,11 +46,11 @@ export default function Header() {
       }`}>
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Left Icons */}
-            <div className="flex items-center gap-4">
+            {/* Left Side */}
+            <div className="flex items-center gap-4 flex-1 lg:flex-none">
               <button 
                 onClick={() => setMobileMenuOpen(true)}
-                className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
+                className={`p-2 rounded-full transition-colors lg:hidden ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
               >
                 <Menu className={`w-6 h-6 ${isScrolled ? 'text-black' : 'text-white'}`} />
               </button>
@@ -59,14 +59,42 @@ export default function Header() {
               >
                 <Mail className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
               </button>
+              
+              {/* Logo - Centered on mobile, left on desktop */}
+              <Link to={createPageUrl('Home')} className="absolute left-1/2 -translate-x-1/2 z-10 lg:relative lg:left-0 lg:translate-x-0">
+                <h1 className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-widest transition-colors ${isScrolled ? 'text-black' : 'text-white'}`}>
+                  LUXE
+                </h1>
+              </Link>
             </div>
 
-            {/* Logo */}
-            <Link to={createPageUrl('Home')} className="absolute left-1/2 -translate-x-1/2 z-10">
-              <h1 className={`text-2xl md:text-3xl lg:text-4xl font-bold tracking-widest transition-colors ${isScrolled ? 'text-black' : 'text-white'}`}>
-                LUXE
-              </h1>
-            </Link>
+            {/* Desktop Navigation - Center */}
+            <nav className="hidden lg:flex items-center gap-8 flex-1 justify-center">
+              <Link 
+                to={createPageUrl('Home')}
+                className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+              >
+                Home
+              </Link>
+              <Link 
+                to={createPageUrl('Shop')}
+                className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+              >
+                Shop
+              </Link>
+              <Link 
+                to={createPageUrl('About')}
+                className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+              >
+                About
+              </Link>
+              <Link 
+                to={createPageUrl('Contact')}
+                className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-700 hover:text-black' : 'text-white hover:text-white/80'}`}
+              >
+                Contact
+              </Link>
+            </nav>
 
             {/* Right Icons */}
             <div className="flex items-center gap-1 sm:gap-2">
