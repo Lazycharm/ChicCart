@@ -42,8 +42,8 @@ export default function AdminTaxes() {
   const [formData, setFormData] = useState({
     name: '',
     rate: 0,
-    type: 'percentage' as 'percentage' | 'fixed',
-    applies_to: 'all' as 'all' | 'products' | 'shipping' | 'both',
+    type: 'percentage',
+    applies_to: 'all',
     countries: [],
     states: [],
     is_active: true,

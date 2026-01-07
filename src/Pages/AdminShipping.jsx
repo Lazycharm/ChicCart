@@ -43,7 +43,7 @@ export default function AdminShipping() {
     zone_id: '',
     name: '',
     carrier: '',
-    method: 'flat' as 'flat' | 'weight' | 'price' | 'free',
+    method: 'flat',
     rate: 0,
     min_order_value: 0,
     max_order_value: 0,
