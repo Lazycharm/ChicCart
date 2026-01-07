@@ -124,6 +124,13 @@ export async function signUp(email: string, password: string, metadata?: Record<
       };
     }
     
+    // Add redirect URL for email confirmation if needed
+    const redirectUrl = window.location.origin + '/auth/callback';
+    if (!signUpOptions.options) {
+      signUpOptions.options = {};
+    }
+    signUpOptions.options.emailRedirectTo = redirectUrl;
+    
     console.log('Signup options being sent:', JSON.stringify(signUpOptions, null, 2));
     
     const { data, error } = await supabase.auth.signUp(signUpOptions);
@@ -134,7 +141,9 @@ export async function signUp(email: string, password: string, metadata?: Record<
         message: error.message,
         status: error.status,
         name: error.name,
-        fullError: error
+        fullError: error,
+        email: normalizedEmail,
+        redirectUrl: redirectUrl
       });
 
       // Provide more user-friendly error messages
@@ -147,10 +156,12 @@ export async function signUp(email: string, password: string, metadata?: Record<
             error.message?.toLowerCase().includes('user already registered')) {
           errorMessage = 'This email is already registered. Please sign in instead.';
         } else if (error.message?.toLowerCase().includes('invalid email') || 
-                   error.message?.toLowerCase().includes('email address') && error.message?.toLowerCase().includes('invalid')) {
+                   (error.message?.toLowerCase().includes('email address') && error.message?.toLowerCase().includes('invalid'))) {
           // Check if it's really an invalid email or a configuration issue
           if (emailRegex.test(normalizedEmail)) {
-            errorMessage = 'Unable to create account. This might be a configuration issue. Please contact support or try a different email.';
+            // Show more helpful error with actual Supabase message
+            console.error('Configuration issue detected. Actual Supabase error:', error.message);
+            errorMessage = `Unable to create account: ${error.message}. This might be a Supabase configuration issue. Please check: 1) URL Configuration in Supabase Dashboard, 2) Redirect URLs are set correctly, 3) Email confirmation settings.`;
           } else {
             errorMessage = 'Please enter a valid email address. Make sure it includes @ and a domain (e.g., example@email.com).';
           }
