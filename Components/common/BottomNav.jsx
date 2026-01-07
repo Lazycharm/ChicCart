@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Grid3X3, TrendingUp, ShoppingBag, User, Menu, X } from 'lucide-react';
+import { Home, Grid3X3, TrendingUp, ShoppingBag, User } from 'lucide-react';
 import { useCart } from '@/components/ui/CartContext';
 import { useAuth } from '@/components/ui/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export default function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const { isAuthenticated } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const isActive = (path) => {
     const currentPath = location.pathname;
@@ -78,13 +76,11 @@ export default function BottomNav() {
       badge: cartCount
     },
     { 
-      icon: Menu, 
-      label: 'Menu', 
-      path: '#',
-      onClick: (e) => {
-        e.preventDefault();
-        setMenuOpen(true);
-      }
+      icon: User, 
+      label: 'Me', 
+      path: isAuthenticated ? '/orders' : '/login',
+      onClick: handleMeClick,
+      isActive: isMeActive
     }
   ];
 
@@ -153,121 +149,6 @@ export default function BottomNav() {
           })}
         </div>
       </nav>
-
-      {/* Mobile Menu Drawer */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-[60] lg:hidden"
-            onClick={() => setMenuOpen(false)}
-          >
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'tween', duration: 0.3 }}
-              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] overflow-y-auto"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
-                <h2 className="text-xl font-bold">Menu</h2>
-                <button onClick={() => setMenuOpen(false)}>
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <nav className="p-4 space-y-1">
-                {/* Quick Links */}
-                <div className="mb-4">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Quick Links</h3>
-                  <Link 
-                    to={createPageUrl('About')}
-                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    About Us
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Contact')}
-                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Contact
-                  </Link>
-                </div>
-
-                {/* Customer Service */}
-                <div className="border-t pt-4 mt-4">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Customer Service</h3>
-                  <Link 
-                    to={createPageUrl('FAQ')}
-                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    FAQ
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Returns')}
-                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Returns & Refunds
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Privacy')}
-                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Privacy Policy
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Terms')}
-                    className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Terms & Conditions
-                  </Link>
-                  {isAuthenticated && (
-                    <Link 
-                      to={createPageUrl('Orders')}
-                      className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Track Order
-                    </Link>
-                  )}
-                </div>
-
-                {/* Account */}
-                {isAuthenticated ? (
-                  <div className="border-t pt-4 mt-4">
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Account</h3>
-                    <Link 
-                      to={createPageUrl('Orders')}
-                      className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      My Orders
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="border-t pt-4 mt-4">
-                    <Link 
-                      to={createPageUrl('Login')}
-                      className="block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors font-medium"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Sign In / Sign Up
-                    </Link>
-                  </div>
-                )}
-              </nav>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

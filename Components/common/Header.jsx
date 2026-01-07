@@ -105,7 +105,7 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* Right: Search, User, Favorites, Cart */}
+            {/* Right: Search, Favorites, Cart, Menu */}
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <button 
                 onClick={() => setSearchOpen(true)}
@@ -114,24 +114,6 @@ export default function Header() {
               >
                 <Search className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
               </button>
-
-              {isAuthenticated ? (
-                <button 
-                  onClick={() => window.location.href = createPageUrl('Orders')}
-                  className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
-                  aria-label="Account"
-                >
-                  <User className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
-                </button>
-              ) : (
-                <Link
-                  to={createPageUrl('Login')}
-                  className={`p-2 rounded-full transition-colors ${isScrolled ? 'hover:bg-gray-100' : 'hover:bg-white/20'}`}
-                  aria-label="Login"
-                >
-                  <User className={`w-5 h-5 ${isScrolled ? 'text-black' : 'text-white'}`} />
-                </Link>
-              )}
 
               <Link 
                 to={createPageUrl('Wishlist')}
