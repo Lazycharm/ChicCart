@@ -49,7 +49,7 @@ export default function AdminBlog() {
     content: '',
     featured_image: '',
     category_id: '',
-    tags: [] as string[],
+    tags: [],
     is_published: false,
     meta_title: '',
     meta_description: ''

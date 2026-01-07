@@ -35,7 +35,7 @@ export default function AdminShipping() {
   const [editingRate, setEditingRate] = useState(null);
   const [zoneFormData, setZoneFormData] = useState({
     name: '',
-    countries: [] as string[],
+    countries: [],
     is_active: true,
     display_order: 0
   });

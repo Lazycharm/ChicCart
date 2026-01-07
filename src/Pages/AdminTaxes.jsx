@@ -44,8 +44,8 @@ export default function AdminTaxes() {
     rate: 0,
     type: 'percentage' as 'percentage' | 'fixed',
     applies_to: 'all' as 'all' | 'products' | 'shipping' | 'both',
-    countries: [] as string[],
-    states: [] as string[],
+    countries: [],
+    states: [],
     is_active: true,
     priority: 0
   });
