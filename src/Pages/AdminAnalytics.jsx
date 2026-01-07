@@ -9,7 +9,7 @@ import {
   TrendingUp, TrendingDown, DollarSign, ShoppingBag, Users, 
   Package, Clock, Loader2, BarChart3, ArrowUp, ArrowDown
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 
