@@ -1,0 +1,16 @@
+{
+  "name": "Wishlist",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_email",
+    "product_id"
+  ]
+}
