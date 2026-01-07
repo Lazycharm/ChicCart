@@ -52,9 +52,9 @@ export default function Header() {
 
   return (
     <>
-      {/* Main Header */}
-      <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-transparent'
+      {/* Main Header - Fixed on scroll */}
+      <header className={`fixed top-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-md transition-all duration-300 ${
+        isScrolled ? 'shadow-md' : ''
       }`}>
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">

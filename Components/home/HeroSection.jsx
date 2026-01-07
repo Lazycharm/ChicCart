@@ -56,7 +56,7 @@ export default function HeroSection({ banners = [] }) {
   const prevSlide = () => setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
 
   return (
-    <section className="relative h-[60vh] min-h-[500px] lg:h-[70vh] lg:min-h-[600px] overflow-hidden bg-gray-900 mt-28">
+    <section className="relative h-[60vh] min-h-[500px] lg:h-[70vh] lg:min-h-[600px] overflow-hidden bg-gray-900">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
