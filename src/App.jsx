@@ -23,6 +23,14 @@ import AdminCustomers from './Pages/AdminCustomers';
 import AdminCoupons from './Pages/AdminCoupons';
 import AdminBanners from './Pages/AdminBanners';
 import AdminBusiness from './Pages/AdminBusiness';
+import AdminSettings from './Pages/AdminSettings';
+import AdminPages from './Pages/AdminPages';
+import AdminCategories from './Pages/AdminCategories';
+import AdminPayments from './Pages/AdminPayments';
+import AdminShipping from './Pages/AdminShipping';
+import AdminTaxes from './Pages/AdminTaxes';
+import AdminBlog from './Pages/AdminBlog';
+import AdminAnalytics from './Pages/AdminAnalytics';
 import Login from './Pages/Login';
 
 // Suppress React Router v7 warnings (optional)
@@ -57,6 +65,14 @@ function App() {
         <Route path="/admin/customers" element={<Layout currentPageName="AdminCustomers"><ProtectedRoute requireAdmin><AdminCustomers /></ProtectedRoute></Layout>} />
         <Route path="/admin/coupons" element={<Layout currentPageName="AdminCoupons"><ProtectedRoute requireAdmin><AdminCoupons /></ProtectedRoute></Layout>} />
         <Route path="/admin/banners" element={<Layout currentPageName="AdminBanners"><ProtectedRoute requireAdmin><AdminBanners /></ProtectedRoute></Layout>} />
+        <Route path="/admin/settings" element={<Layout currentPageName="AdminSettings"><ProtectedRoute requireAdmin><AdminSettings /></ProtectedRoute></Layout>} />
+        <Route path="/admin/pages" element={<Layout currentPageName="AdminPages"><ProtectedRoute requireAdmin><AdminPages /></ProtectedRoute></Layout>} />
+        <Route path="/admin/categories" element={<Layout currentPageName="AdminCategories"><ProtectedRoute requireAdmin><AdminCategories /></ProtectedRoute></Layout>} />
+        <Route path="/admin/payments" element={<Layout currentPageName="AdminPayments"><ProtectedRoute requireAdmin><AdminPayments /></ProtectedRoute></Layout>} />
+        <Route path="/admin/shipping" element={<Layout currentPageName="AdminShipping"><ProtectedRoute requireAdmin><AdminShipping /></ProtectedRoute></Layout>} />
+        <Route path="/admin/taxes" element={<Layout currentPageName="AdminTaxes"><ProtectedRoute requireAdmin><AdminTaxes /></ProtectedRoute></Layout>} />
+        <Route path="/admin/blog" element={<Layout currentPageName="AdminBlog"><ProtectedRoute requireAdmin><AdminBlog /></ProtectedRoute></Layout>} />
+        <Route path="/admin/analytics" element={<Layout currentPageName="AdminAnalytics"><ProtectedRoute requireAdmin><AdminAnalytics /></ProtectedRoute></Layout>} />
         <Route path="/login" element={
           <Layout currentPageName="Login">
             <Login />

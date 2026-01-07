@@ -1,18 +1,101 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getPageBySlug } from '@/services/pages';
 import { motion } from 'framer-motion';
-import { Heart, Leaf, Users, Award, ArrowRight } from 'lucide-react';
+import { Heart, Leaf, Users, Award, ArrowRight, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 
 export default function About() {
-  const values = [
+  const { data: page, isLoading } = useQuery({
+    queryKey: ['page', 'about'],
+    queryFn: () => getPageBySlug('about'),
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  // Fallback content if page doesn't exist
+  const defaultValues = [
     { icon: Heart, title: 'Customer First', description: 'We prioritize your satisfaction above all else, ensuring every interaction exceeds expectations.' },
     { icon: Leaf, title: 'Sustainability', description: 'Committed to eco-friendly practices and sustainable fashion that cares for our planet.' },
     { icon: Users, title: 'Inclusivity', description: 'Fashion for everyone, celebrating diversity in all sizes, styles, and preferences.' },
     { icon: Award, title: 'Quality', description: 'Premium materials and craftsmanship in every piece we create and curate.' },
   ];
 
+  const defaultStats = [
+    { value: '50K+', label: 'Happy Customers' },
+    { value: '200+', label: 'Products' },
+    { value: '25+', label: 'Countries' },
+    { value: '4.9', label: 'Average Rating' },
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
+      </div>
+    );
+  }
+
+  // If page exists and has content, render it
+  if (page && page.content) {
+    return (
+      <div className="min-h-screen">
+        {/* Hero */}
+        <section className="relative h-[60vh] flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600)' }}
+          >
+            <div className="absolute inset-0 bg-black/60" />
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative text-center text-white px-4"
+          >
+            <h1 className="text-4xl lg:text-6xl font-bold mb-4">{page.title || 'Our Story'}</h1>
+            {page.excerpt && (
+              <p className="text-xl text-gray-200 max-w-2xl mx-auto">{page.excerpt}</p>
+            )}
+          </motion.div>
+        </section>
+
+        {/* Content */}
+        <section className="py-20 px-4">
+          <div className="max-w-4xl mx-auto">
+            <div 
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: page.content }}
+            />
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="py-20 px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl font-bold mb-4">Ready to Elevate Your Style?</h2>
+              <p className="text-gray-600 mb-8">
+                Discover our latest collections and find pieces that speak to you.
+              </p>
+              <Button size="lg" asChild className="bg-black hover:bg-gray-800">
+                <Link to={createPageUrl('Shop')}>
+                  Shop Now <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </motion.div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // Fallback to default content
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -86,7 +169,7 @@ export default function About() {
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value, index) => (
+            {defaultValues.map((value, index) => (
               <motion.div
                 key={value.title}
                 initial={{ opacity: 0, y: 30 }}
@@ -110,12 +193,7 @@ export default function About() {
       <section className="py-20 bg-black text-white px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            {[
-              { value: '50K+', label: 'Happy Customers' },
-              { value: '200+', label: 'Products' },
-              { value: '25+', label: 'Countries' },
-              { value: '4.9', label: 'Average Rating' },
-            ].map((stat, index) => (
+            {defaultStats.map((stat, index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, scale: 0.8 }}

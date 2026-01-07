@@ -14,13 +14,36 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from 'sonner';
 import { createOrder } from '@/services/orders';
+import { useQuery } from '@tanstack/react-query';
+import { getEnabledPaymentProviders } from '@/services/payments';
+import { getSettings } from '@/services/settings';
 
 export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('');
+
+  // Fetch payment providers and settings
+  const { data: paymentProviders = [], isLoading: providersLoading } = useQuery({
+    queryKey: ['enabled-payment-providers'],
+    queryFn: () => getEnabledPaymentProviders(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ['store-settings'],
+    queryFn: () => getSettings(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Set default payment method when providers load
+  React.useEffect(() => {
+    if (paymentProviders.length > 0 && !paymentMethod) {
+      setPaymentMethod(paymentProviders[0].type);
+    }
+  }, [paymentProviders, paymentMethod]);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -88,7 +111,7 @@ export default function Checkout() {
         total: total,
         status: 'pending',
         payment_method: paymentMethod,
-        payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
+        payment_status: paymentMethod === 'cash_on_delivery' ? 'pending' : 'paid',
         shipping_address: {
           street: formData.address,
           city: formData.city,
@@ -291,38 +314,90 @@ export default function Checkout() {
                     Payment Method
                   </h2>
 
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
-                    <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'card' ? 'border-black bg-gray-50' : 'hover:border-gray-400'}`}>
-                      <RadioGroupItem value="card" id="card" />
-                      <div className="flex-1">
-                        <p className="font-medium">Credit / Debit Card</p>
-                        <p className="text-sm text-gray-500">Pay securely with your card</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" className="h-6" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg" alt="Mastercard" className="h-6" />
-                      </div>
-                    </label>
+                  {providersLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
+                    </div>
+                  ) : paymentProviders.length === 0 ? (
+                    <p className="text-center text-gray-500 py-4">No payment methods available. Please contact support.</p>
+                  ) : (
+                    <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
+                      {paymentProviders.map((provider) => {
+                        const getProviderIcon = () => {
+                          switch (provider.type) {
+                            case 'stripe':
+                            case 'card':
+                              return <CreditCard className="w-6 h-6" />;
+                            case 'paypal':
+                              return (
+                                <div className="w-6 h-6 flex items-center justify-center bg-blue-500 text-white rounded">
+                                  <span className="text-xs font-bold">PP</span>
+                                </div>
+                              );
+                            case 'cash_on_delivery':
+                              return (
+                                <div className="w-6 h-6 flex items-center justify-center bg-green-500 text-white rounded">
+                                  <span className="text-xs font-bold">$</span>
+                                </div>
+                              );
+                            default:
+                              return <CreditCard className="w-6 h-6" />;
+                          }
+                        };
 
-                    <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'paypal' ? 'border-black bg-gray-50' : 'hover:border-gray-400'}`}>
-                      <RadioGroupItem value="paypal" id="paypal" />
-                      <div className="flex-1">
-                        <p className="font-medium">PayPal</p>
-                        <p className="text-sm text-gray-500">You will be redirected to PayPal</p>
-                      </div>
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6" />
-                    </label>
+                        const getProviderLabel = () => {
+                          switch (provider.type) {
+                            case 'stripe':
+                              return 'Credit/Debit Card';
+                            case 'paypal':
+                              return 'PayPal';
+                            case 'cash_on_delivery':
+                              return 'Cash on Delivery';
+                            case 'bank_transfer':
+                              return 'Bank Transfer';
+                            default:
+                              return provider.name;
+                          }
+                        };
 
-                    <label className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-colors ${paymentMethod === 'cod' ? 'border-black bg-gray-50' : 'hover:border-gray-400'}`}>
-                      <RadioGroupItem value="cod" id="cod" />
-                      <div className="flex-1">
-                        <p className="font-medium">Cash on Delivery</p>
-                        <p className="text-sm text-gray-500">Pay when you receive your order</p>
-                      </div>
-                    </label>
-                  </RadioGroup>
+                        const getProviderDescription = () => {
+                          switch (provider.type) {
+                            case 'stripe':
+                              return 'Visa, Mastercard, Amex';
+                            case 'paypal':
+                              return 'Pay with your PayPal account';
+                            case 'cash_on_delivery':
+                              return 'Pay when you receive';
+                            case 'bank_transfer':
+                              return 'Direct bank transfer';
+                            default:
+                              return provider.name;
+                          }
+                        };
 
-                  {paymentMethod === 'card' && (
+                        return (
+                          <label
+                            key={provider.id}
+                            className={`flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-colors ${
+                              paymentMethod === provider.type ? 'border-black bg-gray-50' : 'hover:border-gray-400'
+                            }`}
+                          >
+                            <RadioGroupItem value={provider.type} id={provider.id} />
+                            {getProviderIcon()}
+                            <div className="flex-1">
+                              <p className="font-medium">{getProviderLabel()}</p>
+                              <p className="text-sm text-gray-500">{getProviderDescription()}</p>
+                              {provider.is_test_mode && (
+                                <p className="text-xs text-yellow-600 mt-1">Test Mode</p>
+                              )}
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </RadioGroup>
+                  )}
+
+                  {(paymentMethod === 'card' || paymentMethod === 'stripe') && (
                     <div className="mt-6 space-y-4">
                       <div>
                         <Label htmlFor="cardName">Name on Card</Label>
@@ -410,8 +485,11 @@ export default function Checkout() {
                   <div className="mb-6 pb-6 border-b">
                     <h3 className="font-medium mb-2">Payment Method</h3>
                     <p className="text-gray-600">
-                      {paymentMethod === 'card' ? 'Credit/Debit Card' : 
-                       paymentMethod === 'paypal' ? 'PayPal' : 'Cash on Delivery'}
+                      {paymentProviders.find(p => p.type === paymentMethod)?.name || 
+                       (paymentMethod === 'stripe' || paymentMethod === 'card' ? 'Credit/Debit Card' : 
+                        paymentMethod === 'paypal' ? 'PayPal' : 
+                        paymentMethod === 'cash_on_delivery' ? 'Cash on Delivery' : 
+                        paymentMethod)}
                     </p>
                   </div>
 

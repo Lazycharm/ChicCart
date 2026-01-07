@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getPageBySlug, getPages } from '@/services/pages';
+import { getSettings } from '@/services/settings';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Clock, MessageCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { createPageUrl } from '@/utils';
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,11 +20,23 @@ export default function Contact() {
     message: ''
   });
 
+  const { data: page } = useQuery({
+    queryKey: ['page', 'contact'],
+    queryFn: () => getPageBySlug('contact'),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ['store-settings'],
+    queryFn: () => getSettings(),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
+    // Simulate API call - in production, this would send to your backend
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast.success('Message sent successfully! We\'ll get back to you soon.');
@@ -29,10 +45,32 @@ export default function Contact() {
   };
 
   const contactInfo = [
-    { icon: Mail, label: 'Email', value: 'support@luxe.com', href: 'mailto:support@luxe.com' },
-    { icon: Phone, label: 'Phone', value: '+1 (555) 123-4567', href: 'tel:+15551234567' },
-    { icon: MapPin, label: 'Address', value: '123 Fashion Street, NY 10001', href: '#' },
-    { icon: Clock, label: 'Hours', value: 'Mon-Fri: 9AM-6PM EST', href: '#' },
+    { 
+      icon: Mail, 
+      label: 'Email', 
+      value: settings?.store_email || 'support@luxe.com', 
+      href: `mailto:${settings?.store_email || 'support@luxe.com'}` 
+    },
+    { 
+      icon: Phone, 
+      label: 'Phone', 
+      value: settings?.store_phone || '+1 (555) 123-4567', 
+      href: `tel:${settings?.store_phone?.replace(/\D/g, '') || '15551234567'}` 
+    },
+    { 
+      icon: MapPin, 
+      label: 'Address', 
+      value: settings?.store_address 
+        ? `${settings.store_address}, ${settings.store_city || ''}, ${settings.store_state || ''} ${settings.store_zip || ''}`
+        : '123 Fashion Street, NY 10001', 
+      href: '#' 
+    },
+    { 
+      icon: Clock, 
+      label: 'Hours', 
+      value: 'Mon-Fri: 9AM-6PM EST', 
+      href: '#' 
+    },
   ];
 
   return (
@@ -45,7 +83,7 @@ export default function Contact() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl lg:text-5xl font-bold mb-4"
           >
-            Get in Touch
+            {page?.title || 'Get in Touch'}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -53,10 +91,22 @@ export default function Contact() {
             transition={{ delay: 0.1 }}
             className="text-gray-400 text-lg"
           >
-            We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            {page?.excerpt || "We'd love to hear from you. Send us a message and we'll respond as soon as possible."}
           </motion.p>
         </div>
       </section>
+
+      {/* Page Content (if exists) */}
+      {page?.content && (
+        <section className="py-12 px-4 bg-white">
+          <div className="max-w-4xl mx-auto">
+            <div 
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: page.content }}
+            />
+          </div>
+        </section>
+      )}
 
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
@@ -92,20 +142,43 @@ export default function Contact() {
               ))}
 
               {/* Social Links */}
-              <div className="pt-6">
-                <p className="font-medium mb-4">Follow Us</p>
-                <div className="flex gap-3">
-                  {['Instagram', 'Facebook', 'Twitter'].map((social) => (
-                    <a
-                      key={social}
-                      href="#"
-                      className="px-4 py-2 bg-white rounded-full text-sm font-medium hover:bg-black hover:text-white transition-colors"
-                    >
-                      {social}
-                    </a>
-                  ))}
+              {(settings?.social_facebook || settings?.social_instagram || settings?.social_twitter) && (
+                <div className="pt-6">
+                  <p className="font-medium mb-4">Follow Us</p>
+                  <div className="flex gap-3">
+                    {settings.social_facebook && (
+                      <a
+                        href={settings.social_facebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-white rounded-full text-sm font-medium hover:bg-black hover:text-white transition-colors"
+                      >
+                        Facebook
+                      </a>
+                    )}
+                    {settings.social_instagram && (
+                      <a
+                        href={settings.social_instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-white rounded-full text-sm font-medium hover:bg-black hover:text-white transition-colors"
+                      >
+                        Instagram
+                      </a>
+                    )}
+                    {settings.social_twitter && (
+                      <a
+                        href={settings.social_twitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-white rounded-full text-sm font-medium hover:bg-black hover:text-white transition-colors"
+                      >
+                        Twitter
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
 
             {/* Contact Form */}
@@ -207,5 +280,3 @@ export default function Contact() {
     </div>
   );
 }
-
-import { createPageUrl } from '@/utils';

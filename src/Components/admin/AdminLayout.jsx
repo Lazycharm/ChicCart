@@ -5,16 +5,25 @@ import { useAuth } from '@/components/ui/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Package, ShoppingCart, Users, Tag, Image,
-  Menu, X, LogOut, Loader2
+  Menu, X, LogOut, Loader2, Settings, FileText, CreditCard,
+  Truck, Receipt, BookOpen, BarChart3, FolderTree
 } from 'lucide-react';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: 'AdminDashboard', path: '/admin' },
+  { icon: BarChart3, label: 'Analytics', href: 'AdminAnalytics', path: '/admin/analytics' },
   { icon: Package, label: 'Products', href: 'AdminProducts', path: '/admin/products' },
+  { icon: FolderTree, label: 'Categories', href: 'AdminCategories', path: '/admin/categories' },
   { icon: ShoppingCart, label: 'Orders', href: 'AdminOrders', path: '/admin/orders' },
   { icon: Users, label: 'Customers', href: 'AdminCustomers', path: '/admin/customers' },
   { icon: Tag, label: 'Coupons', href: 'AdminCoupons', path: '/admin/coupons' },
   { icon: Image, label: 'Banners', href: 'AdminBanners', path: '/admin/banners' },
+  { icon: BookOpen, label: 'Blog', href: 'AdminBlog', path: '/admin/blog' },
+  { icon: FileText, label: 'Pages', href: 'AdminPages', path: '/admin/pages' },
+  { icon: CreditCard, label: 'Payments', href: 'AdminPayments', path: '/admin/payments' },
+  { icon: Truck, label: 'Shipping', href: 'AdminShipping', path: '/admin/shipping' },
+  { icon: Receipt, label: 'Taxes', href: 'AdminTaxes', path: '/admin/taxes' },
+  { icon: Settings, label: 'Settings', href: 'AdminSettings', path: '/admin/settings' },
 ];
 
 export default function AdminLayout({ children, title, description, actionButton }) {
