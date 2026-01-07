@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '@/services/products';
 import { getCategories } from '@/services/categories';
 import { useAuth } from '@/components/ui/AuthContext';
 import { uploadFile } from '@/services/storage';
-import { motion, AnimatePresence } from 'framer-motion';
+import AdminLayout from '@/Components/admin/AdminLayout';
+import ResponsiveTable from '@/Components/admin/ResponsiveTable';
 import { 
-  Package, Plus, Search, Edit, Trash2, X, Upload,
-  LayoutDashboard, ShoppingCart, Users, Tag, Image, LogOut, Loader2
+  Plus, Search, Edit, Trash2, X, Upload, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,15 +38,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: 'AdminDashboard' },
-  { icon: Package, label: 'Products', href: 'AdminProducts', active: true },
-  { icon: ShoppingCart, label: 'Orders', href: 'AdminOrders' },
-  { icon: Users, label: 'Customers', href: 'AdminCustomers' },
-  { icon: Tag, label: 'Coupons', href: 'AdminCoupons' },
-  { icon: Image, label: 'Banners', href: 'AdminBanners' },
-];
 
 export default function AdminProducts() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -171,162 +161,115 @@ export default function AdminProducts() {
     p.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
-    );
-  }
-
-  // ProtectedRoute already handles auth check, but double-check for safety
-  if (!user || user.role !== 'admin') {
-    return null; // ProtectedRoute will handle redirect
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white z-40 hidden lg:block">
-        <div className="p-6 border-b border-gray-800">
-          <h1 className="text-xl font-bold">LUXE<span className="text-rose-500">.</span> Admin</h1>
-        </div>
-        <nav className="p-4 space-y-1">
-          {navItems.map(item => (
-            <Link
-              key={item.label}
-              to={createPageUrl(item.href)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active ? 'bg-rose-500 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-          <Link
-            to={createPageUrl('Home')}
-            className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            Back to Store
-          </Link>
-        </div>
-      </aside>
+    <AdminLayout
+      title="Products"
+      description={`${products.length} total products`}
+      actionButton={
+        <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}>
+          <Plus className="w-4 h-4 mr-2" /> Add Product
+        </Button>
+      }
+    >
+      {/* Search */}
+      <div className="relative mb-4 lg:mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Input
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          className="pl-10 bg-white border-gray-200"
+        />
+      </div>
 
-      {/* Main Content */}
-      <main className="lg:ml-64 p-6 lg:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-bold">Products</h1>
-            <p className="text-gray-500">{products.length} products</p>
-          </div>
-          <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}>
-            <Plus className="w-4 h-4 mr-2" /> Add Product
-          </Button>
-        </div>
-
-        {/* Search */}
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white"
-          />
-        </div>
-
-        {/* Products Table */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader>
+      {/* Products Table */}
+      <ResponsiveTable>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="min-w-[200px]">Product</TableHead>
+              <TableHead className="min-w-[120px]">Category</TableHead>
+              <TableHead className="min-w-[100px]">Price</TableHead>
+              <TableHead className="min-w-[80px]">Stock</TableHead>
+              <TableHead className="min-w-[120px]">Status</TableHead>
+              <TableHead className="text-right min-w-[100px]">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableCell colSpan={6} className="text-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto text-rose-500" />
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+            ) : filteredProducts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                  No products found
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={product.images?.[0] || 'https://via.placeholder.com/40'}
+                        alt={product.name}
+                        className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg object-cover flex-shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm lg:text-base text-gray-900 truncate">{product.name}</p>
+                        <p className="text-xs lg:text-sm text-gray-500 truncate">{product.slug}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-sm lg:text-base text-gray-700">{product.category}</TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-sm lg:text-base text-gray-900">${product.sale_price || product.price}</p>
+                      {product.sale_price && (
+                        <p className="text-xs text-gray-400 line-through">${product.price}</p>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={product.stock > 0 ? 'default' : 'destructive'} className="text-xs">
+                      {product.stock || 0}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {product.featured && <Badge className="bg-amber-100 text-amber-700 text-xs">Featured</Badge>}
+                      {product.is_new && <Badge className="bg-green-100 text-green-700 text-xs">New</Badge>}
+                      {product.is_flash_deal && <Badge className="bg-rose-100 text-rose-700 text-xs">Flash</Badge>}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1 lg:gap-2">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 lg:h-9 lg:w-9" onClick={() => handleEdit(product)}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 lg:h-9 lg:w-9" onClick={() => handleDelete(product.id)}>
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
-              ) : filteredProducts.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                    No products found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={product.images?.[0] || 'https://via.placeholder.com/40'}
-                          alt={product.name}
-                          className="w-12 h-12 rounded-lg object-cover"
-                        />
-                        <div>
-                          <p className="font-medium">{product.name}</p>
-                          <p className="text-sm text-gray-500">{product.slug}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{product.category}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">${product.sale_price || product.price}</p>
-                        {product.sale_price && (
-                          <p className="text-sm text-gray-400 line-through">${product.price}</p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={product.stock > 0 ? 'default' : 'destructive'}>
-                        {product.stock || 0}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        {product.featured && <Badge className="bg-amber-100 text-amber-700">Featured</Badge>}
-                        {product.is_new && <Badge className="bg-green-100 text-green-700">New</Badge>}
-                        {product.is_flash_deal && <Badge className="bg-rose-100 text-rose-700">Flash</Badge>}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(product)}>
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id)}>
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </ResponsiveTable>
 
-        {/* Add/Edit Dialog */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid sm:grid-cols-2 gap-4">
+      {/* Add/Edit Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Product Name *</Label>
                   <Input
@@ -354,7 +297,7 @@ export default function AdminProducts() {
                 />
               </div>
 
-              <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <Label>Price *</Label>
                   <Input
@@ -426,7 +369,7 @@ export default function AdminProducts() {
                 </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Sizes (comma separated)</Label>
                   <Input
@@ -475,21 +418,20 @@ export default function AdminProducts() {
                 </label>
               </div>
 
-              <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {(createMutation.isPending || updateMutation.isPending) && (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  )}
-                  {editingProduct ? 'Update' : 'Create'} Product
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </main>
-    </div>
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto">
+                Cancel
+              </Button>
+              <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="w-full sm:w-auto">
+                {(createMutation.isPending || updateMutation.isPending) && (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                )}
+                {editingProduct ? 'Update' : 'Create'} Product
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </AdminLayout>
   );
 }

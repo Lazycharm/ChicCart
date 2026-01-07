@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAllBanners, createBanner, updateBanner, deleteBanner } from '@/services/banners';
 import { useAuth } from '@/components/ui/AuthContext';
 import { uploadFile } from '@/services/storage';
-import { motion, AnimatePresence } from 'framer-motion';
+import AdminLayout from '@/Components/admin/AdminLayout';
+import ResponsiveTable from '@/Components/admin/ResponsiveTable';
 import { 
-  Image, Plus, Edit, Trash2, LayoutDashboard, ShoppingCart, 
-  Users, Tag, LogOut, Loader2, Upload, X, ArrowUp, ArrowDown, Package
+  Image, Plus, Edit, Trash2, Loader2, Upload, ArrowUp, ArrowDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,15 +29,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from 'sonner';
-
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: 'AdminDashboard' },
-  { icon: Package, label: 'Products', href: 'AdminProducts' },
-  { icon: ShoppingCart, label: 'Orders', href: 'AdminOrders' },
-  { icon: Users, label: 'Customers', href: 'AdminCustomers' },
-  { icon: Tag, label: 'Coupons', href: 'AdminCoupons' },
-  { icon: Image, label: 'Banners', href: 'AdminBanners', active: true },
-];
 
 export default function AdminBanners() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -197,173 +186,127 @@ export default function AdminBanners() {
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (!user || user.role !== 'admin') {
-    return null;
-  }
-
   const heroBanners = banners.filter(b => b.position === 'hero');
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white z-40 hidden lg:block">
-        <div className="p-6 border-b border-gray-800">
-          <h1 className="text-xl font-bold">LUXE<span className="text-rose-500">.</span> Admin</h1>
+    <AdminLayout
+      title="Hero Sliders"
+      description="Manage hero section sliders on the homepage"
+      actionButton={
+        <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-rose-500 hover:bg-rose-600">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Slider
+        </Button>
+      }
+    >
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
         </div>
-        <nav className="p-4 space-y-1">
-          {navItems.map(item => (
-            <Link
-              key={item.label}
-              to={createPageUrl(item.href)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active ? 'bg-rose-500 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-          <Link
-            to={createPageUrl('Home')}
-            className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            Back to Store
-          </Link>
+      ) : heroBanners.length === 0 ? (
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 lg:p-12 text-center">
+          <Image className="w-12 h-12 lg:w-16 lg:h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg lg:text-xl font-semibold mb-2 text-gray-900">No hero sliders yet</h3>
+          <p className="text-sm lg:text-base text-gray-600 mb-6">Create your first hero slider to display on the homepage</p>
+          <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-rose-500 hover:bg-rose-600">
+            <Plus className="w-4 h-4 mr-2" />
+            Add First Slider
+          </Button>
         </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="lg:ml-64 p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Hero Sliders</h1>
-              <p className="text-gray-600">Manage hero section sliders on the homepage</p>
-            </div>
-            <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-rose-500 hover:bg-rose-600">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Slider
-            </Button>
-          </div>
-
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
-            </div>
-          ) : heroBanners.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-              <Image className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No hero sliders yet</h3>
-              <p className="text-gray-600 mb-6">Create your first hero slider to display on the homepage</p>
-              <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-rose-500 hover:bg-rose-600">
-                <Plus className="w-4 h-4 mr-2" />
-                Add First Slider
-              </Button>
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16">Order</TableHead>
-                    <TableHead>Preview</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Subtitle</TableHead>
-                    <TableHead>Link</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {heroBanners.map((banner, index) => (
-                    <TableRow key={banner.id}>
-                      <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <button
-                            onClick={() => handleOrderChange(banner, 'up')}
-                            disabled={index === 0}
-                            className="p-1 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                          >
-                            <ArrowUp className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleOrderChange(banner, 'down')}
-                            disabled={index === heroBanners.length - 1}
-                            className="p-1 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                          >
-                            <ArrowDown className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="w-20 h-12 rounded overflow-hidden bg-gray-100">
-                          <img 
-                            src={banner.image} 
-                            alt={banner.title || 'Banner'} 
-                            className="w-full h-full object-cover"
-                            onError={(e) => { e.target.src = 'https://via.placeholder.com/200x120?text=No+Image'; }}
-                          />
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">{banner.title || '-'}</TableCell>
-                      <TableCell>{banner.subtitle || '-'}</TableCell>
-                      <TableCell>
-                        <a href={banner.link || '#'} target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:underline text-sm">
-                          {banner.link || '-'}
-                        </a>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={banner.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
-                          {banner.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(banner)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(banner.id)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </div>
-      </main>
+      ) : (
+        <ResponsiveTable>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-16 min-w-[64px]">Order</TableHead>
+                <TableHead className="min-w-[100px]">Preview</TableHead>
+                <TableHead className="min-w-[150px]">Title</TableHead>
+                <TableHead className="min-w-[150px]">Subtitle</TableHead>
+                <TableHead className="min-w-[150px]">Link</TableHead>
+                <TableHead className="min-w-[100px]">Status</TableHead>
+                <TableHead className="text-right min-w-[100px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {heroBanners.map((banner, index) => (
+                <TableRow key={banner.id}>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      <button
+                        onClick={() => handleOrderChange(banner, 'up')}
+                        disabled={index === 0}
+                        className="p-1 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Move up"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleOrderChange(banner, 'down')}
+                        disabled={index === heroBanners.length - 1}
+                        className="p-1 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Move down"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="w-16 h-10 lg:w-20 lg:h-12 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                      <img 
+                        src={banner.image} 
+                        alt={banner.title || 'Banner'} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.src = 'https://via.placeholder.com/200x120?text=No+Image'; }}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium text-sm lg:text-base text-gray-900">{banner.title || '-'}</TableCell>
+                  <TableCell className="text-sm lg:text-base text-gray-700">{banner.subtitle || '-'}</TableCell>
+                  <TableCell>
+                    <a href={banner.link || '#'} target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:underline text-xs lg:text-sm truncate block max-w-[150px]">
+                      {banner.link || '-'}
+                    </a>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={`text-xs ${banner.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {banner.is_active ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1 lg:gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 lg:h-9 lg:w-9"
+                        onClick={() => handleEdit(banner)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 lg:h-9 lg:w-9 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDelete(banner.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ResponsiveTable>
+      )}
 
       {/* Create/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingBanner ? 'Edit Hero Slider' : 'Create Hero Slider'}</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">{editingBanner ? 'Edit Hero Slider' : 'Create Hero Slider'}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
               <div className="space-y-2">
                 <Label htmlFor="title">Title *</Label>
                 <Input
@@ -439,40 +382,43 @@ export default function AdminBanners() {
               )}
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
               <div className="space-y-2">
-                <Label htmlFor="link">Link URL</Label>
+                <Label htmlFor="link" className="text-sm font-medium">Link URL</Label>
                 <Input
                   id="link"
                   value={formData.link}
                   onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
                   placeholder="e.g., /shop or /shop?filter=sale"
+                  className="mt-1"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cta_text">Button Text</Label>
+                <Label htmlFor="cta_text" className="text-sm font-medium">Button Text</Label>
                 <Input
                   id="cta_text"
                   value={formData.cta_text}
                   onChange={(e) => setFormData(prev => ({ ...prev, cta_text: e.target.value }))}
                   placeholder="e.g., Shop Now"
+                  className="mt-1"
                 />
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
               <div className="space-y-2">
-                <Label htmlFor="display_order">Display Order</Label>
+                <Label htmlFor="display_order" className="text-sm font-medium">Display Order</Label>
                 <Input
                   id="display_order"
                   type="number"
                   value={formData.display_order}
                   onChange={(e) => setFormData(prev => ({ ...prev, display_order: parseInt(e.target.value) || 0 }))}
                   min="0"
+                  className="mt-1"
                 />
               </div>
               <div className="flex items-center gap-4 pt-6">
-                <Label htmlFor="is_active" className="cursor-pointer">Active</Label>
+                <Label htmlFor="is_active" className="cursor-pointer text-sm font-medium">Active</Label>
                 <Switch
                   id="is_active"
                   checked={formData.is_active}
@@ -481,13 +427,13 @@ export default function AdminBanners() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
+              <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="w-full sm:w-auto">
                 Cancel
               </Button>
               <Button 
                 type="submit" 
-                className="bg-rose-500 hover:bg-rose-600"
+                className="bg-rose-500 hover:bg-rose-600 w-full sm:w-auto"
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
                 {createMutation.isPending || updateMutation.isPending ? (
@@ -503,7 +449,7 @@ export default function AdminBanners() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </AdminLayout>
   );
 }
 
