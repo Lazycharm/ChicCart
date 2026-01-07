@@ -63,12 +63,14 @@ export default function Header() {
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Left: Logo */}
             <div className="flex items-center gap-4">
-              <button 
-                onClick={() => setMobileMenuOpen(true)}
-                className="p-2 rounded-full transition-colors lg:hidden hover:bg-gray-100"
-              >
-                <Menu className="w-6 h-6 text-black" />
-              </button>
+              <div className="lg:hidden mobile-menu-container relative">
+                <button 
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="p-2 rounded-full transition-colors hover:bg-gray-100"
+                >
+                  <Menu className="w-6 h-6 text-black" />
+                </button>
+              </div>
               
               <Link to={createPageUrl('Home')} className="flex-shrink-0">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-widest text-black">
@@ -318,147 +320,142 @@ export default function Header() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50"
-            style={{ zIndex: 9998 }}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'tween', duration: 0.3 }}
-              className="absolute left-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
-                <h2 className="text-xl font-bold tracking-widest">LUXE</h2>
-                <button onClick={() => setMobileMenuOpen(false)}>
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <nav className="p-4 space-y-1">
-                {/* Categories */}
-                <div className="mb-4">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Categories</h3>
-                  <Link 
-                    to={createPageUrl('Shop')}
-                    className="block py-3 px-4 text-base font-medium hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    All
-                  </Link>
-                  {categories.map(cat => (
-                    <Link 
-                      key={cat.id}
-                      to={createPageUrl('Shop') + `?category=${cat.slug}`}
-                      className="block py-3 px-4 text-base font-medium hover:bg-gray-50 rounded-lg transition-colors"
+      {/* Mobile Menu Dropdown */}
+      <div className="lg:hidden mobile-menu-container relative">
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50"
+                style={{ zIndex: 9998 }}
+                onClick={() => setMobileMenuOpen(false)}
+              />
+              {/* Dropdown Menu */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ type: 'tween', duration: 0.2 }}
+                className="absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 max-h-[80vh] overflow-y-auto"
+                style={{ zIndex: 10000 }}
+                onClick={e => e.stopPropagation()}
+              >
+                {/* Quick Links */}
+                <div className="px-4 py-2">
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Quick Links</h4>
+                  <div className="space-y-1">
+                    <Link
+                      to={createPageUrl('Shop')}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      {cat.name}
+                      Shop All
                     </Link>
-                  ))}
-                  <Link 
-                    to={createPageUrl('Shop') + '?filter=new'}
-                    className="block py-3 px-4 text-base font-medium hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    New Arrivals
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Shop') + '?filter=sale'}
-                    className="block py-3 px-4 text-base font-medium text-rose-500 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Sale
-                  </Link>
+                    <Link
+                      to={createPageUrl('Shop') + '?filter=new'}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      New Arrivals
+                    </Link>
+                    <Link
+                      to={createPageUrl('Shop') + '?filter=sale'}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sale
+                    </Link>
+                    <Link
+                      to={createPageUrl('About')}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      About Us
+                    </Link>
+                    <Link
+                      to={createPageUrl('Contact')}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Contact
+                    </Link>
+                  </div>
                 </div>
 
-                {/* Quick Links */}
-                <div className="border-t pt-4 mt-4">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Quick Links</h3>
-                  <Link 
-                    to={createPageUrl('About')}
-                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    About Us
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Contact')}
-                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Contact
-                  </Link>
-                </div>
+                {/* Divider */}
+                <div className="border-t border-gray-200 my-2"></div>
 
                 {/* Customer Service */}
-                <div className="border-t pt-4 mt-4">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Customer Service</h3>
-                  <Link 
-                    to={createPageUrl('FAQ')}
-                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    FAQ
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Returns')}
-                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Returns & Refunds
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Privacy')}
-                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Privacy Policy
-                  </Link>
-                  <Link 
-                    to={createPageUrl('Terms')}
-                    className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Terms & Conditions
-                  </Link>
-                  {isAuthenticated && (
-                    <Link 
-                      to={createPageUrl('Orders')}
-                      className="block py-3 px-4 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                <div className="px-4 py-2">
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Customer Service</h4>
+                  <div className="space-y-1">
+                    <Link
+                      to={createPageUrl('FAQ')}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Track Order
+                      FAQ
                     </Link>
-                  )}
+                    <Link
+                      to={createPageUrl('Returns')}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Returns & Refunds
+                    </Link>
+                    <Link
+                      to={createPageUrl('Privacy')}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Privacy Policy
+                    </Link>
+                    <Link
+                      to={createPageUrl('Terms')}
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Terms & Conditions
+                    </Link>
+                    {isAuthenticated && (
+                      <Link
+                        to={createPageUrl('Orders')}
+                        className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Track Order
+                      </Link>
+                    )}
+                  </div>
                 </div>
 
                 {/* Admin Section */}
                 {user?.role === 'admin' && (
-                  <div className="border-t pt-4 mt-4">
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 px-4">Admin</h3>
-                    <Link 
-                      to={createPageUrl('AdminDashboard')}
-                      className="block py-3 px-4 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Admin Dashboard
-                    </Link>
-                  </div>
+                  <>
+                    <div className="border-t border-gray-200 my-2"></div>
+                    <div className="px-4 py-2">
+                      <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2">Admin</h4>
+                      <div className="space-y-1">
+                        <Link
+                          to={createPageUrl('AdminDashboard')}
+                          className="block px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-md transition-colors font-medium"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Admin Dashboard
+                        </Link>
+                      </div>
+                    </div>
+                  </>
                 )}
-              </nav>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </div>
     </>
   );
 }

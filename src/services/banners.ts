@@ -3,8 +3,11 @@ import { supabase } from '@/lib/supabaseClient';
 export interface Banner {
   id: string;
   title?: string;
+  subtitle?: string;
+  description?: string;
   image: string;
   link?: string;
+  cta_text?: string;
   position?: string;
   is_active?: boolean;
   display_order?: number;

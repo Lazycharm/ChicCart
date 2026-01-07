@@ -56,7 +56,7 @@ export default function HeroSection({ banners = [] }) {
   const prevSlide = () => setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
 
   return (
-    <section className="relative h-[60vh] min-h-[500px] lg:h-[70vh] lg:min-h-[600px] overflow-hidden bg-gray-900" style={{ zIndex: 1 }}>
+    <section className="relative h-[60vh] min-h-[500px] lg:h-[70vh] lg:min-h-[600px] overflow-hidden bg-gray-900">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
@@ -65,7 +65,6 @@ export default function HeroSection({ banners = [] }) {
           exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="absolute inset-0"
-          style={{ zIndex: 1 }}
         >
           <div 
             className="absolute inset-0 bg-cover bg-center"

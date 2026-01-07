@@ -21,6 +21,7 @@ import AdminProducts from './Pages/AdminProducts';
 import AdminOrders from './Pages/AdminOrders';
 import AdminCustomers from './Pages/AdminCustomers';
 import AdminCoupons from './Pages/AdminCoupons';
+import AdminBanners from './Pages/AdminBanners';
 import AdminBusiness from './Pages/AdminBusiness';
 import Login from './Pages/Login';
 
@@ -55,7 +56,7 @@ function App() {
         <Route path="/admin/orders" element={<Layout currentPageName="AdminOrders"><ProtectedRoute requireAdmin><AdminOrders /></ProtectedRoute></Layout>} />
         <Route path="/admin/customers" element={<Layout currentPageName="AdminCustomers"><ProtectedRoute requireAdmin><AdminCustomers /></ProtectedRoute></Layout>} />
         <Route path="/admin/coupons" element={<Layout currentPageName="AdminCoupons"><ProtectedRoute requireAdmin><AdminCoupons /></ProtectedRoute></Layout>} />
-        <Route path="/admin/banners" element={<Layout currentPageName="AdminBusiness"><ProtectedRoute requireAdmin><AdminBusiness /></ProtectedRoute></Layout>} />
+        <Route path="/admin/banners" element={<Layout currentPageName="AdminBanners"><ProtectedRoute requireAdmin><AdminBanners /></ProtectedRoute></Layout>} />
         <Route path="/login" element={
           <Layout currentPageName="Login">
             <Login />

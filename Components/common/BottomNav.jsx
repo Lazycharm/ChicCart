@@ -73,7 +73,7 @@ export default function BottomNav() {
       icon: ShoppingBag, 
       label: 'Cart', 
       path: createPageUrl('Cart'), 
-      badge: cartCount
+      badge: cartCount > 0 ? cartCount : null
     },
     { 
       icon: User, 
