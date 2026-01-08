@@ -132,6 +132,23 @@ ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE coupons ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist (to allow re-running the script)
+DROP POLICY IF EXISTS "Public can view categories" ON categories;
+DROP POLICY IF EXISTS "Public can view products" ON products;
+DROP POLICY IF EXISTS "Public can view active banners" ON banners;
+DROP POLICY IF EXISTS "Public can view active coupons" ON coupons;
+DROP POLICY IF EXISTS "Public can view reviews" ON reviews;
+DROP POLICY IF EXISTS "Users can view their own orders" ON orders;
+DROP POLICY IF EXISTS "Users can create orders" ON orders;
+DROP POLICY IF EXISTS "Anyone can create reviews" ON reviews;
+DROP POLICY IF EXISTS "Users can update their own reviews" ON reviews;
+DROP POLICY IF EXISTS "Admins have full access to categories" ON categories;
+DROP POLICY IF EXISTS "Admins have full access to products" ON products;
+DROP POLICY IF EXISTS "Admins have full access to banners" ON banners;
+DROP POLICY IF EXISTS "Admins have full access to orders" ON orders;
+DROP POLICY IF EXISTS "Admins have full access to coupons" ON coupons;
+DROP POLICY IF EXISTS "Admins have full access to user_profiles" ON user_profiles;
+
 -- RLS Policies for Public Read Access
 CREATE POLICY "Public can view categories" ON categories FOR SELECT USING (true);
 CREATE POLICY "Public can view products" ON products FOR SELECT USING (true);
@@ -430,6 +447,19 @@ ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shipping_zones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE shipping_rates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tax_rules ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing admin table policies if they exist
+DROP POLICY IF EXISTS "Public can view published blog posts" ON blog_posts;
+DROP POLICY IF EXISTS "Public can view blog categories" ON blog_categories;
+DROP POLICY IF EXISTS "Public can view published pages" ON pages;
+DROP POLICY IF EXISTS "Admins have full access to store_settings" ON store_settings;
+DROP POLICY IF EXISTS "Admins have full access to payment_providers" ON payment_providers;
+DROP POLICY IF EXISTS "Admins have full access to blog_posts" ON blog_posts;
+DROP POLICY IF EXISTS "Admins have full access to blog_categories" ON blog_categories;
+DROP POLICY IF EXISTS "Admins have full access to pages" ON pages;
+DROP POLICY IF EXISTS "Admins have full access to shipping_zones" ON shipping_zones;
+DROP POLICY IF EXISTS "Admins have full access to shipping_rates" ON shipping_rates;
+DROP POLICY IF EXISTS "Admins have full access to tax_rules" ON tax_rules;
 
 -- RLS Policies: Public read access for published content
 CREATE POLICY "Public can view published blog posts" ON blog_posts 

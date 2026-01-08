@@ -14,6 +14,7 @@ export function createPageUrl(pageName) {
     'Privacy': '/privacy',
     'Terms': '/terms',
     'Returns': '/returns',
+    'Login': '/login',
     'AdminDashboard': '/admin',
     'AdminProducts': '/admin/products',
     'AdminOrders': '/admin/orders',
