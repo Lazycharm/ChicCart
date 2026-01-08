@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, ShoppingBag, Heart, User, Menu, X, Mail, ChevronDown
+  Search, ShoppingBag, Heart, User, Menu, X, Mail, ChevronDown, LogOut, Package, Settings
 } from 'lucide-react';
 import { useCart } from '@/components/ui/CartContext';
 import { useWishlist } from '@/components/ui/WishlistContext';
@@ -15,11 +15,12 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartCount, setIsOpen } = useCart();
   const { wishlist } = useWishlist();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
@@ -41,10 +42,13 @@ export default function Header() {
       if (mobileMenuOpen && !event.target.closest('.mobile-menu-container')) {
         setMobileMenuOpen(false);
       }
+      if (profileMenuOpen && !event.target.closest('.profile-menu-container')) {
+        setProfileMenuOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [desktopMenuOpen, mobileMenuOpen]);
+  }, [desktopMenuOpen, mobileMenuOpen, profileMenuOpen]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -52,6 +56,24 @@ export default function Header() {
       window.location.href = createPageUrl('Shop') + `?search=${encodeURIComponent(searchQuery)}`;
     }
   };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setProfileMenuOpen(false);
+      window.location.href = createPageUrl('Home');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const displayName = user?.full_name || user?.name || user?.email?.split('@')[0] || 'User';
+  const initials = displayName
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <>
@@ -283,6 +305,108 @@ export default function Header() {
                   </span>
                 )}
               </button>
+
+              {/* Profile Icon */}
+              <div className="profile-menu-container relative">
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                    className="p-2 rounded-full transition-colors hover:bg-gray-100 relative"
+                    aria-label="Profile"
+                  >
+                    {user?.avatar_url ? (
+                      <img
+                        src={user.avatar_url}
+                        alt={displayName}
+                        className="w-5 h-5 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center">
+                        <span className="text-white text-xs font-semibold">{initials}</span>
+                      </div>
+                    )}
+                  </button>
+                ) : (
+                  <Link
+                    to={createPageUrl('Login')}
+                    className="p-2 rounded-full transition-colors hover:bg-gray-100"
+                    aria-label="Sign In"
+                  >
+                    <User className="w-5 h-5 text-black" />
+                  </Link>
+                )}
+
+                {/* Profile Dropdown Menu */}
+                {isAuthenticated && (
+                  <AnimatePresence>
+                    {profileMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2"
+                        style={{ zIndex: 10000 }}
+                      >
+                        {/* Profile Header */}
+                        <div className="px-4 py-3 border-b border-gray-200">
+                          <div className="flex items-center gap-3">
+                            {user?.avatar_url ? (
+                              <img
+                                src={user.avatar_url}
+                                alt={displayName}
+                                className="w-10 h-10 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center">
+                                <span className="text-white text-sm font-semibold">{initials}</span>
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-sm text-gray-900 truncate">{displayName}</p>
+                              <p className="text-xs text-gray-600 truncate">{user?.email}</p>
+                              {user?.role === 'admin' && (
+                                <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-rose-100 text-rose-700 rounded">
+                                  Admin
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className="py-2">
+                          <Link
+                            to={createPageUrl('Orders')}
+                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            onClick={() => setProfileMenuOpen(false)}
+                          >
+                            <Package className="w-4 h-4" />
+                            <span>My Orders</span>
+                          </Link>
+                          {user?.role === 'admin' && (
+                            <Link
+                              to={createPageUrl('AdminDashboard')}
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors font-medium"
+                              onClick={() => setProfileMenuOpen(false)}
+                            >
+                              <Settings className="w-4 h-4" />
+                              <span>Admin Dashboard</span>
+                            </Link>
+                          )}
+                          <div className="border-t border-gray-200 my-2"></div>
+                          <button
+                            onClick={handleSignOut}
+                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors w-full text-left"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            <span>Sign Out</span>
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
+              </div>
 
               {/* Desktop Menu Dropdown */}
               <div className="hidden lg:block desktop-menu-container relative">
