@@ -136,8 +136,9 @@ export default function AdminBanners() {
 
     setUploading(true);
     try {
-      const url = await uploadFile(file, 'banners');
-      setFormData(prev => ({ ...prev, image: url }));
+      const result = await uploadFile(file, 'banners');
+      const imageUrl = result.file_url || result;
+      setFormData(prev => ({ ...prev, image: imageUrl }));
       toast.success('Image uploaded successfully!');
     } catch (error) {
       toast.error('Failed to upload image: ' + error.message);

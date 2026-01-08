@@ -73,6 +73,7 @@ function App() {
         <Route path="/admin/taxes" element={<Layout currentPageName="AdminTaxes"><ProtectedRoute requireAdmin><AdminTaxes /></ProtectedRoute></Layout>} />
         <Route path="/admin/blog" element={<Layout currentPageName="AdminBlog"><ProtectedRoute requireAdmin><AdminBlog /></ProtectedRoute></Layout>} />
         <Route path="/admin/analytics" element={<Layout currentPageName="AdminAnalytics"><ProtectedRoute requireAdmin><AdminAnalytics /></ProtectedRoute></Layout>} />
+        <Route path="/admin/business" element={<Layout currentPageName="AdminBusiness"><ProtectedRoute requireAdmin><AdminBusiness /></ProtectedRoute></Layout>} />
         <Route path="/login" element={
           <Layout currentPageName="Login">
             <Login />

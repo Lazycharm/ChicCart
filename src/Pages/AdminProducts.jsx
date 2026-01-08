@@ -148,12 +148,23 @@ export default function AdminProducts() {
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const { file_url } = await uploadFile(file);
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    try {
+      const result = await uploadFile(file, 'products');
+      const imageUrl = result.file_url || result;
       setFormData(prev => ({
         ...prev,
-        images: [...prev.images, file_url]
+        images: [...prev.images, imageUrl]
       }));
+      toast.success('Image uploaded successfully!');
+    } catch (error) {
+      toast.error('Failed to upload image: ' + error.message);
     }
   };
 

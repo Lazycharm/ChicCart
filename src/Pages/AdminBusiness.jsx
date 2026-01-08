@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAllBanners, createBanner, updateBanner, deleteBanner } from '@/services/banners';
 import { useAuth } from '@/components/ui/AuthContext';
 import { uploadFile } from '@/services/storage';
+import AdminLayout from '@/Components/admin/AdminLayout';
+import ResponsiveTable from '@/Components/admin/ResponsiveTable';
 import { 
-  Package, Plus, Edit, Trash2, LayoutDashboard, ShoppingCart, 
-  Users, Tag, Image, LogOut, Loader2, Upload
+  Plus, Edit, Trash2, Image, Loader2, Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,19 +26,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { toast } from 'sonner';
 
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: 'AdminDashboard' },
-  { icon: Package, label: 'Products', href: 'AdminProducts' },
-  { icon: ShoppingCart, label: 'Orders', href: 'AdminOrders' },
-  { icon: Users, label: 'Customers', href: 'AdminCustomers' },
-  { icon: Tag, label: 'Coupons', href: 'AdminCoupons' },
-  { icon: Image, label: 'Banners', href: 'AdminBanners', active: true },
-];
-
-export default function AdminBanners() {
+export default function AdminBusiness() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState(null);
   const [formData, setFormData] = useState({
@@ -48,7 +45,8 @@ export default function AdminBanners() {
   });
 
   const queryClient = useQueryClient();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
+  const [uploading, setUploading] = useState(false);
 
   const { data: banners = [], isLoading } = useQuery({
     queryKey: ['admin-banners'],
@@ -59,9 +57,13 @@ export default function AdminBanners() {
     mutationFn: (data) => createBanner(data),
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-banners']);
+      queryClient.invalidateQueries(['banners']);
       toast.success('Banner created!');
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to create banner: ' + error.message);
     }
   });
 
@@ -69,9 +71,13 @@ export default function AdminBanners() {
     mutationFn: ({ id, data }) => updateBanner(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-banners']);
+      queryClient.invalidateQueries(['banners']);
       toast.success('Banner updated!');
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to update banner: ' + error.message);
     }
   });
 
@@ -79,7 +85,11 @@ export default function AdminBanners() {
     mutationFn: (id) => deleteBanner(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-banners']);
+      queryClient.invalidateQueries(['banners']);
       toast.success('Banner deleted!');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete banner: ' + error.message);
     }
   });
 
@@ -122,9 +132,23 @@ export default function AdminBanners() {
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const { file_url } = await uploadFile(file);
-      setFormData(prev => ({ ...prev, image: file_url }));
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await uploadFile(file, 'banners');
+      const imageUrl = result.file_url || result;
+      setFormData(prev => ({ ...prev, image: imageUrl }));
+      toast.success('Image uploaded successfully!');
+    } catch (error) {
+      toast.error('Failed to upload image: ' + error.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -134,230 +158,246 @@ export default function AdminBanners() {
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
-    );
-  }
-
-  // ProtectedRoute already handles auth check, but double-check for safety
-  if (!user || user.role !== 'admin') {
-    return null; // ProtectedRoute will handle redirect
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white z-40 hidden lg:block">
-        <div className="p-6 border-b border-gray-800">
-          <h1 className="text-xl font-bold">LUXE<span className="text-rose-500">.</span> Admin</h1>
+    <AdminLayout
+      title="Business Banners"
+      description="Manage promotional banners and business information"
+      actionButton={
+        <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-rose-500 hover:bg-rose-600">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Banner
+        </Button>
+      }
+    >
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
         </div>
-        <nav className="p-4 space-y-1">
-          {navItems.map(item => (
-            <Link
-              key={item.label}
-              to={createPageUrl(item.href)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                item.active ? 'bg-rose-500 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-          <Link
-            to={createPageUrl('Home')}
-            className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            Back to Store
-          </Link>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="lg:ml-64 p-6 lg:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-bold">Banners</h1>
-            <p className="text-gray-500">Manage homepage banners and sliders</p>
-          </div>
-          <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}>
-            <Plus className="w-4 h-4 mr-2" /> Add Banner
+      ) : banners.length === 0 ? (
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 lg:p-12 text-center">
+          <Image className="w-12 h-12 lg:w-16 lg:h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg lg:text-xl font-semibold mb-2 text-gray-900">No banners yet</h3>
+          <p className="text-sm lg:text-base text-gray-600 mb-6">Create your first promotional banner</p>
+          <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-rose-500 hover:bg-rose-600">
+            <Plus className="w-4 h-4 mr-2" />
+            Add First Banner
           </Button>
         </div>
-
-        {/* Banners Grid */}
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin" />
-          </div>
-        ) : banners.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl">
-            <Image className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No banners yet</p>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {banners.map((banner) => (
-              <Card key={banner.id} className="overflow-hidden">
-                <div className="relative aspect-video">
-                  <img
-                    src={banner.image || 'https://via.placeholder.com/400x200'}
-                    alt={banner.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <Badge className={banner.is_active ? 'bg-green-500' : 'bg-gray-500'}>
+      ) : (
+        <ResponsiveTable>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[100px]">Preview</TableHead>
+                <TableHead className="min-w-[150px]">Title</TableHead>
+                <TableHead className="min-w-[150px]">Subtitle</TableHead>
+                <TableHead className="min-w-[150px]">Link</TableHead>
+                <TableHead className="min-w-[100px]">Position</TableHead>
+                <TableHead className="min-w-[100px]">Status</TableHead>
+                <TableHead className="text-right min-w-[100px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {banners.map((banner) => (
+                <TableRow key={banner.id}>
+                  <TableCell>
+                    <div className="w-16 h-10 lg:w-20 lg:h-12 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                      <img 
+                        src={banner.image || 'https://via.placeholder.com/200x120?text=No+Image'} 
+                        alt={banner.title || 'Banner'} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.src = 'https://via.placeholder.com/200x120?text=No+Image'; }}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium text-sm lg:text-base text-gray-900">{banner.title || '-'}</TableCell>
+                  <TableCell className="text-sm lg:text-base text-gray-700">{banner.subtitle || '-'}</TableCell>
+                  <TableCell>
+                    <a href={banner.link || '#'} target="_blank" rel="noopener noreferrer" className="text-rose-500 hover:underline text-xs lg:text-sm truncate block max-w-[150px]">
+                      {banner.link || '-'}
+                    </a>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className="text-xs bg-blue-100 text-blue-700">{banner.position || 'hero'}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={`text-xs ${banner.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
                       {banner.is_active ? 'Active' : 'Inactive'}
                     </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-4">
-                  <h3 className="font-bold mb-1">{banner.title}</h3>
-                  <p className="text-sm text-gray-500 mb-3">{banner.subtitle}</p>
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline">{banner.position}</Badge>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(banner)}>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1 lg:gap-2">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 lg:h-9 lg:w-9" onClick={() => handleEdit(banner)}>
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(banner.id)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 lg:h-9 lg:w-9" onClick={() => handleDelete(banner.id)}>
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </Button>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ResponsiveTable>
+      )}
 
-        {/* Add/Edit Dialog */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{editingBanner ? 'Edit Banner' : 'Add New Banner'}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label>Title *</Label>
+      {/* Add/Edit Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">{editingBanner ? 'Edit Banner' : 'Create Banner'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title *</Label>
                 <Input
+                  id="title"
                   value={formData.title}
-                  onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="e.g., Summer Collection"
                   required
                 />
               </div>
-
-              <div>
-                <Label>Subtitle</Label>
+              <div className="space-y-2">
+                <Label htmlFor="subtitle">Subtitle *</Label>
                 <Input
+                  id="subtitle"
                   value={formData.subtitle}
-                  onChange={e => setFormData({ ...formData, subtitle: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
+                  placeholder="e.g., UP TO 50% OFF"
+                  required
                 />
               </div>
+            </div>
 
-              <div>
-                <Label>Image</Label>
-                <div className="mt-2">
-                  {formData.image ? (
-                    <div className="relative">
-                      <img src={formData.image} alt="" className="w-full h-40 object-cover rounded-lg" />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2"
-                        onClick={() => setFormData({ ...formData, image: '' })}
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  ) : (
-                    <label className="flex items-center justify-center w-full h-40 border-2 border-dashed rounded-lg cursor-pointer hover:border-gray-400">
-                      <div className="text-center">
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto" />
-                        <p className="text-sm text-gray-500 mt-2">Click to upload</p>
-                      </div>
-                      <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" />
-                    </label>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Link</Label>
+            <div className="space-y-2">
+              <Label htmlFor="image">Image *</Label>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
                   <Input
-                    value={formData.link}
-                    onChange={e => setFormData({ ...formData, link: e.target.value })}
-                    placeholder="/Shop"
+                    id="image"
+                    value={formData.image}
+                    onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
+                    placeholder="Image URL or upload file"
+                    required
                   />
                 </div>
-                <div>
-                  <Label>CTA Text</Label>
-                  <Input
-                    value={formData.cta_text}
-                    onChange={e => setFormData({ ...formData, cta_text: e.target.value })}
-                    placeholder="Shop Now"
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                  <Button type="button" variant="outline" disabled={uploading}>
+                    {uploading ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4 mr-2" />
+                    )}
+                    Upload
+                  </Button>
+                </label>
+              </div>
+              {formData.image && (
+                <div className="mt-2 w-full h-48 rounded-lg overflow-hidden bg-gray-100">
+                  <img 
+                    src={formData.image} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.target.style.display = 'none'; }}
                   />
                 </div>
-              </div>
+              )}
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Position</Label>
-                  <Select
-                    value={formData.position}
-                    onValueChange={value => setFormData({ ...formData, position: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hero">Hero</SelectItem>
-                      <SelectItem value="promo">Promo</SelectItem>
-                      <SelectItem value="sidebar">Sidebar</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Display Order</Label>
-                  <Input
-                    type="number"
-                    value={formData.display_order}
-                    onChange={e => setFormData({ ...formData, display_order: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={formData.is_active}
-                  onCheckedChange={checked => setFormData({ ...formData, is_active: checked })}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="link" className="text-sm font-medium">Link URL</Label>
+                <Input
+                  id="link"
+                  value={formData.link}
+                  onChange={(e) => setFormData(prev => ({ ...prev, link: e.target.value }))}
+                  placeholder="e.g., /shop or /shop?filter=sale"
+                  className="mt-1"
                 />
-                <Label>Active</Label>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="cta_text" className="text-sm font-medium">Button Text</Label>
+                <Input
+                  id="cta_text"
+                  value={formData.cta_text}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cta_text: e.target.value }))}
+                  placeholder="e.g., Shop Now"
+                  className="mt-1"
+                />
+              </div>
+            </div>
 
-              <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {(createMutation.isPending || updateMutation.isPending) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="position" className="text-sm font-medium">Position</Label>
+                <Select
+                  value={formData.position}
+                  onValueChange={value => setFormData(prev => ({ ...prev, position: value }))}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hero">Hero</SelectItem>
+                    <SelectItem value="promo">Promo</SelectItem>
+                    <SelectItem value="sidebar">Sidebar</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="display_order" className="text-sm font-medium">Display Order</Label>
+                <Input
+                  id="display_order"
+                  type="number"
+                  value={formData.display_order}
+                  onChange={(e) => setFormData(prev => ({ ...prev, display_order: parseInt(e.target.value) || 0 }))}
+                  min="0"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 pt-6">
+              <Label htmlFor="is_active" className="cursor-pointer text-sm font-medium">Active</Label>
+              <Switch
+                id="is_active"
+                checked={formData.is_active}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
+              <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }} className="w-full sm:w-auto">
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                className="bg-rose-500 hover:bg-rose-600 w-full sm:w-auto"
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
+                {createMutation.isPending || updateMutation.isPending ? (
+                  <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  )}
-                  {editingBanner ? 'Update' : 'Create'} Banner
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </main>
-    </div>
+                    Saving...
+                  </>
+                ) : (
+                  editingBanner ? 'Update Banner' : 'Create Banner'
+                )}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </AdminLayout>
   );
 }

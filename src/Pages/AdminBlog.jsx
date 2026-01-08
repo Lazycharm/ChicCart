@@ -188,13 +188,19 @@ export default function AdminBlog() {
     const file = e.target.files[0];
     if (!file) return;
 
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
     setUploading(true);
     try {
-      const url = await uploadFile(file, 'blog');
-      setPostFormData(prev => ({ ...prev, featured_image: url }));
-      toast.success('Image uploaded!');
+      const result = await uploadFile(file, 'blog');
+      const imageUrl = result.file_url || result;
+      setPostFormData(prev => ({ ...prev, featured_image: imageUrl }));
+      toast.success('Image uploaded successfully!');
     } catch (error) {
-      toast.error('Failed to upload: ' + error.message);
+      toast.error('Failed to upload image: ' + error.message);
     } finally {
       setUploading(false);
     }

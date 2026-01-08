@@ -16,11 +16,20 @@ export function createPageUrl(pageName) {
     'Returns': '/returns',
     'Login': '/login',
     'AdminDashboard': '/admin',
+    'AdminAnalytics': '/admin/analytics',
     'AdminProducts': '/admin/products',
+    'AdminCategories': '/admin/categories',
     'AdminOrders': '/admin/orders',
     'AdminCustomers': '/admin/customers',
     'AdminCoupons': '/admin/coupons',
     'AdminBanners': '/admin/banners',
+    'AdminBlog': '/admin/blog',
+    'AdminPages': '/admin/pages',
+    'AdminPayments': '/admin/payments',
+    'AdminShipping': '/admin/shipping',
+    'AdminTaxes': '/admin/taxes',
+    'AdminSettings': '/admin/settings',
+    'AdminBusiness': '/admin/business',
   };
   return routes[pageName] || '/';
 }
