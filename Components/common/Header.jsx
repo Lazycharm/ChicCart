@@ -306,8 +306,8 @@ export default function Header() {
                 )}
               </button>
 
-              {/* Profile Icon */}
-              <div className="profile-menu-container relative">
+              {/* Profile Icon - Desktop Only */}
+              <div className="profile-menu-container relative hidden lg:block">
                 {isAuthenticated ? (
                   <button
                     onClick={() => setProfileMenuOpen(!profileMenuOpen)}
