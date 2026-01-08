@@ -57,29 +57,57 @@ export async function getSettings() {
 }
 
 export async function updateSettings(settings: Partial<StoreSettings>) {
-  const existing = await getSettings();
+  // Check if any settings exist
+  const { data: existing, error: checkError } = await supabase
+    .from('store_settings')
+    .select('id')
+    .limit(1)
+    .single();
   
-  if (existing.id) {
-    // Update existing
+  // If no row exists or error is PGRST116 (no rows), create new
+  if (!existing || (checkError && checkError.code === 'PGRST116')) {
     const { data, error } = await supabase
       .from('store_settings')
-      .update({ ...settings, updated_at: new Date().toISOString() })
-      .eq('id', existing.id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  } else {
-    // Create new
-    const { data, error } = await supabase
-      .from('store_settings')
-      .insert([settings])
+      .insert([{
+        ...settings,
+        updated_at: new Date().toISOString()
+      }])
       .select()
       .single();
 
     if (error) throw error;
     return data;
   }
+  
+  // Update existing (use first row's id)
+  const { data: allSettings } = await supabase
+    .from('store_settings')
+    .select('id')
+    .limit(1);
+  
+  if (allSettings && allSettings.length > 0) {
+    const { data, error } = await supabase
+      .from('store_settings')
+      .update({ ...settings, updated_at: new Date().toISOString() })
+      .eq('id', allSettings[0].id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+  
+  // Fallback: create new
+  const { data, error } = await supabase
+    .from('store_settings')
+    .insert([{
+      ...settings,
+      updated_at: new Date().toISOString()
+    }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 }
 

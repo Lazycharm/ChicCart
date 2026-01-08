@@ -65,6 +65,9 @@ export default function AdminTaxes() {
       toast.success('Tax rule created!');
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to create tax rule: ' + error.message);
     }
   });
 
@@ -75,6 +78,9 @@ export default function AdminTaxes() {
       toast.success('Tax rule updated!');
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to update tax rule: ' + error.message);
     }
   });
 
@@ -83,6 +89,9 @@ export default function AdminTaxes() {
     onSuccess: () => {
       queryClient.invalidateQueries(['tax-rules']);
       toast.success('Tax rule deleted!');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete tax rule: ' + error.message);
     }
   });
 

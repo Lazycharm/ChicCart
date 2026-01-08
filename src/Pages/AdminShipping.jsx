@@ -73,6 +73,9 @@ export default function AdminShipping() {
       toast.success('Shipping zone created!');
       setZoneDialogOpen(false);
       resetZoneForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to create shipping zone: ' + error.message);
     }
   });
 
@@ -83,6 +86,9 @@ export default function AdminShipping() {
       toast.success('Shipping zone updated!');
       setZoneDialogOpen(false);
       resetZoneForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to update shipping zone: ' + error.message);
     }
   });
 
@@ -91,6 +97,9 @@ export default function AdminShipping() {
     onSuccess: () => {
       queryClient.invalidateQueries(['shipping-zones']);
       toast.success('Shipping zone deleted!');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete shipping zone: ' + error.message);
     }
   });
 
@@ -101,6 +110,9 @@ export default function AdminShipping() {
       toast.success('Shipping rate created!');
       setRateDialogOpen(false);
       resetRateForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to create shipping rate: ' + error.message);
     }
   });
 
@@ -111,6 +123,9 @@ export default function AdminShipping() {
       toast.success('Shipping rate updated!');
       setRateDialogOpen(false);
       resetRateForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to update shipping rate: ' + error.message);
     }
   });
 
@@ -119,6 +134,9 @@ export default function AdminShipping() {
     onSuccess: () => {
       queryClient.invalidateQueries(['shipping-rates']);
       toast.success('Shipping rate deleted!');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete shipping rate: ' + error.message);
     }
   });
 

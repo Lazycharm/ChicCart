@@ -8,6 +8,7 @@ import {
   Menu, X, LogOut, Loader2, Settings, FileText, CreditCard,
   Truck, Receipt, BookOpen, BarChart3, FolderTree
 } from 'lucide-react';
+import AdminProfile from './AdminProfile';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: 'AdminDashboard', path: '/admin' },
@@ -120,6 +121,8 @@ export default function AdminLayout({ children, title, description, actionButton
                   <X className="w-5 h-5 text-gray-700" />
                 </button>
               </div>
+              {/* Mobile Profile Section */}
+              <AdminProfile isMobile={true} />
               <nav className="p-4 space-y-1">
                 {navItems.map(item => {
                   const active = isActive(item);
@@ -183,6 +186,8 @@ export default function AdminLayout({ children, title, description, actionButton
             );
           })}
         </nav>
+        {/* Desktop Profile Section */}
+        <AdminProfile isMobile={false} />
         <div className="p-4 border-t border-gray-200">
           <Link
             to={createPageUrl('Home')}

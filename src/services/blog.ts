@@ -72,7 +72,32 @@ export async function getBlogPosts(filters?: Record<string, any>, orderBy?: stri
 
   const { data, error } = await query;
   if (error) throw error;
-  return data || [];
+  
+  // Fetch categories and merge category names
+  const posts = data || [];
+  if (posts.length > 0) {
+    const categoryIds = [...new Set(posts.map(p => p.category_id).filter(Boolean))];
+    if (categoryIds.length > 0) {
+      const { data: categories } = await supabase
+        .from('blog_categories')
+        .select('id, name, slug')
+        .in('id', categoryIds);
+      
+      const categoryMap = new Map((categories || []).map(cat => [cat.id, cat]));
+      
+      return posts.map(post => ({
+        ...post,
+        category_name: post.category_id ? categoryMap.get(post.category_id)?.name : null,
+        category_slug: post.category_id ? categoryMap.get(post.category_id)?.slug : null,
+      }));
+    }
+  }
+  
+  return posts.map(post => ({
+    ...post,
+    category_name: null,
+    category_slug: null,
+  }));
 }
 
 export async function getPublishedBlogPosts(limit?: number) {

@@ -65,6 +65,9 @@ export default function AdminPages() {
       toast.success('Page created successfully!');
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to create page: ' + error.message);
     }
   });
 
@@ -76,6 +79,9 @@ export default function AdminPages() {
       toast.success('Page updated successfully!');
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to update page: ' + error.message);
     }
   });
 
@@ -85,6 +91,9 @@ export default function AdminPages() {
       queryClient.invalidateQueries(['admin-pages']);
       queryClient.invalidateQueries(['pages']);
       toast.success('Page deleted successfully!');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete page: ' + error.message);
     }
   });
 

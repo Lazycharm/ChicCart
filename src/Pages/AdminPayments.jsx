@@ -72,6 +72,9 @@ export default function AdminPayments() {
       toast.success('Payment provider created successfully!');
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to create payment provider: ' + error.message);
     }
   });
 
@@ -82,6 +85,9 @@ export default function AdminPayments() {
       toast.success('Payment provider updated successfully!');
       setIsDialogOpen(false);
       resetForm();
+    },
+    onError: (error) => {
+      toast.error('Failed to update payment provider: ' + error.message);
     }
   });
 
@@ -90,6 +96,9 @@ export default function AdminPayments() {
     onSuccess: () => {
       queryClient.invalidateQueries(['payment-providers']);
       toast.success('Payment provider deleted successfully!');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete payment provider: ' + error.message);
     }
   });
 
