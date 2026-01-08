@@ -307,29 +307,29 @@ export default function Header() {
               </button>
 
               {/* Profile Icon - Desktop Only */}
-              <div className="profile-menu-container relative hidden lg:block">
+              <div className="profile-menu-container relative hidden lg:flex items-center">
                 {isAuthenticated ? (
                   <button
                     onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                    className="p-2 rounded-full transition-colors hover:bg-gray-100 relative"
+                    className="p-2 rounded-full transition-colors hover:bg-gray-100 relative flex items-center justify-center"
                     aria-label="Profile"
                   >
                     {user?.avatar_url ? (
                       <img
                         src={user.avatar_url}
                         alt={displayName}
-                        className="w-5 h-5 rounded-full object-cover"
+                        className="w-5 h-5 rounded-full object-cover border border-gray-200"
                       />
                     ) : (
-                      <div className="w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center">
-                        <span className="text-white text-xs font-semibold">{initials}</span>
+                      <div className="w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center border border-rose-600">
+                        <span className="text-white text-xs font-semibold leading-none">{initials}</span>
                       </div>
                     )}
                   </button>
                 ) : (
                   <Link
                     to={createPageUrl('Login')}
-                    className="p-2 rounded-full transition-colors hover:bg-gray-100"
+                    className="p-2 rounded-full transition-colors hover:bg-gray-100 flex items-center justify-center"
                     aria-label="Sign In"
                   >
                     <User className="w-5 h-5 text-black" />
